@@ -1,20 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import TeacherScreen from './screens/TeacherScreen';
+import LoginScreen from './screens/LoginScreen';
+import ParentScreen from './screens/ParentScreen';
+import HomeScreen from './screens/HomeScreen';
+import Toast from 'react-native-toast-message';
 
-export default function App() {
+const Stack = createStackNavigator();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="TeacherScreen" component={TeacherScreen} />
+        <Stack.Screen name="ParentScreen" component={ParentScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+     <Toast 
+      position="top"
+  visibilityTime={3000}
+  autoHide={true}
+  topOffset={50}
+  bottomOffset={40}
+     />
+     </>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
+
+
