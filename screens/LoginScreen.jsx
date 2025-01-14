@@ -1,107 +1,144 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ToastAndroid } from 'react-native';
-import axios from 'axios';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ToastAndroid,
+  Image,
+  ScrollView,
+} from "react-native";
+import axios from "axios";
+import { COLORS } from "../constants/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Input } from "../components";
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      ToastAndroid.show('Please fill in all fields', ToastAndroid.SHORT);
+      ToastAndroid.show("Please fill in all fields", ToastAndroid.SHORT);
       return;
     }
 
     setLoading(true);
     try {
-      const response = await axios.post('http://192.168.0.102:8082/api/users/login', {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "http://192.168.0.102:8082/api/users/login",
+        {
+          email,
+          password,
+        }
+      );
 
       const { user, token } = response.data;
 
-      // Navigate user based on their role
-      if (user.role === 'parent') {
-        navigation.replace('ParentScreen', { user, token });
-      } else if (user.role === 'teacher') {
-        navigation.replace('TeacherScreen', { user, token });
+      if (user.role === "parent") {
+        navigation.replace("ParentScreen", { user, token });
+      } else if (user.role === "teacher") {
+        navigation.replace("TeacherScreen", { user, token });
       } else {
-        ToastAndroid.show('Invalid user role', ToastAndroid.SHORT);
+        ToastAndroid.show("Invalid user role", ToastAndroid.SHORT);
       }
     } catch (error) {
-      ToastAndroid.show('Login failed. Please try again.', ToastAndroid.SHORT);
-      console.error('Login error:', error.message);
+      ToastAndroid.show("Login failed. Please try again.", ToastAndroid.SHORT);
+      console.error("Login error:", error.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Logging in...' : 'Login'}</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Logo */}
+        <Image
+          style={styles.loginImage}
+          source={require("../assets/icons/logo.png")}
+        />
+
+        {/* Welcome text */}
+        <Text style={styles.title}>Login to your account</Text>
+
+        <View style={styles.inputContainer}>
+          {/* Email Input */}
+          <Input
+            label={"Email address"}
+            onChangeText={setEmail}
+            type="email-address"
+          />
+
+          {/* Password Input */}
+          <Input
+            label={"Password"}
+            type="password"
+            value={password}
+            onChangeText={setPassword}
+          />
+        </View>
+
+        {/* CTA - (Login) */}
+        <Button onPress={handleLogin} disabled={loading}>
+          {" "}
+          {loading ? "Please wait ..." : "Login"}
+        </Button>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
+  },
+  keyboardAvoidingContainer: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
     padding: 16,
+    gap: 40,
+  },
+  inputContainer: {
+    width: "100%",
+    gap: 8,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: 500,
     marginBottom: 20,
+    fontFamily: "Suse-Bold",
   },
-  input: {
-    width: '100%',
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    marginBottom: 10,
+  loginImage: {
+    resizeMode: "contain",
+    height: 200,
   },
   button: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    backgroundColor: '#007bff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 8,
     marginTop: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
 export default LoginScreen;
-
 
 // import React, { useState } from 'react';
 // import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
@@ -113,7 +150,7 @@ export default LoginScreen;
 //   const [password, setPassword] = useState('');
 //   const [loading, setLoading] = useState(false);
 //   console.log("dsrtf");
-  
+
 //   const handleLogin = async () => {
 //     if (!email || !password) {
 //       Toast.show({
@@ -462,4 +499,3 @@ export default LoginScreen;
 // });
 
 // export default LoginScreen;
-
