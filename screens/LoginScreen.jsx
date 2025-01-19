@@ -19,39 +19,54 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  // const handleLogin = async () => {
+  //   if (!email || !password) {
+  //     ToastAndroid.show("Please fill in all fields", ToastAndroid.SHORT);
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.post(
+  //       "http://192.168.0.102:8082/api/users/login",
+  //       {
+  //         email,
+  //         password,
+  //       }
+  //     );
+
+  //     const { user, token } = response.data;
+
+  //     if (user.role === "parent") {
+  //       navigation.replace("ParentScreen", { user, token });
+  //     } else if (user.role === "teacher") {
+  //       navigation.replace("TeacherScreen", { user, token });
+  //     } else {
+  //       ToastAndroid.show("Invalid user role", ToastAndroid.SHORT);
+  //     }
+  //   } catch (error) {
+  //     ToastAndroid.show("Login failed. Please try again.", ToastAndroid.SHORT);
+  //     console.error("Login error:", error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const handleLogin = () => {
     if (!email || !password) {
       ToastAndroid.show("Please fill in all fields", ToastAndroid.SHORT);
       return;
     }
 
     setLoading(true);
-    try {
-      const response = await axios.post(
-        "http://192.168.0.102:8082/api/users/login",
-        {
-          email,
-          password,
-        }
-      );
-
-      const { user, token } = response.data;
-
-      if (user.role === "parent") {
-        navigation.replace("ParentScreen", { user, token });
-      } else if (user.role === "teacher") {
-        navigation.replace("TeacherScreen", { user, token });
-      } else {
-        ToastAndroid.show("Invalid user role", ToastAndroid.SHORT);
-      }
-    } catch (error) {
-      ToastAndroid.show("Login failed. Please try again.", ToastAndroid.SHORT);
-      console.error("Login error:", error.message);
-    } finally {
+    // Simulate password reset logic
+    setTimeout(() => {
       setLoading(false);
-    }
-  };
+      ToastAndroid.show("Password reset successfully", ToastAndroid.SHORT);
 
+      //   Navigate to change default password screen
+      navigation.navigate("ChangeDefaultPassword");
+    }, 2000);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView

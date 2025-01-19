@@ -23,7 +23,8 @@ const ForgotPasswordScreen = ({ navigation }) => {
     setTimeout(() => {
       setLoading(false);
       ToastAndroid.show("OTP sent successfully", ToastAndroid.SHORT);
-      // Navigate to OTP verification screen if needed
+      // Navigate to OTP verification screen
+      navigation.navigate("ResetPassword");
     }, 2000);
   };
 
