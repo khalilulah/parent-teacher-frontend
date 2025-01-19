@@ -11,7 +11,8 @@ import {
 import axios from "axios";
 import { COLORS } from "../constants/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, Input } from "../components";
+import { AuthIntroLayout, Button, Input } from "../components";
+import { Link } from "expo-router";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -57,14 +58,13 @@ const LoginScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Logo */}
-        <Image
-          style={styles.loginImage}
-          source={require("../assets/icons/logo.png")}
+        {/* Forgot Password Intro Layout (Logo, Title and supporting text) */}
+        <AuthIntroLayout
+          title={"Login to your account"}
+          supportingText={
+            "Enter your registered email address and password to continue."
+          }
         />
-
-        {/* Welcome text */}
-        <Text style={styles.title}>Login to your account</Text>
 
         <View style={styles.inputContainer}>
           {/* Email Input */}
@@ -81,6 +81,16 @@ const LoginScreen = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
           />
+
+          {/* Forgot Password */}
+          <View style={styles.forgotPasswordContainer}>
+            <Text
+              style={styles.forgotPasswordText}
+              onPress={() => navigation.navigate("ForgotPassword")}
+            >
+              Forgot Password?
+            </Text>
+          </View>
         </View>
 
         {/* CTA - (Login) */}
@@ -106,7 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    gap: 40,
+    gap: 24,
   },
   inputContainer: {
     width: "100%",
@@ -121,6 +131,15 @@ const styles = StyleSheet.create({
   loginImage: {
     resizeMode: "contain",
     height: 200,
+  },
+  forgotPasswordContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    color: COLORS.primary,
+  },
+  forgotPasswordText: {
+    color: COLORS.primary,
+    fontFamily: "Suse-SemiBold",
   },
   button: {
     width: "100%",

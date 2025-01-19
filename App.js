@@ -12,6 +12,7 @@ import {
   ParentScreen,
   HomeScreen,
 } from "./screens";
+import { ForgotPassword } from "./screens/AuthScreens";
 
 // Font configuration
 const FONT_CONFIG = {
@@ -37,6 +38,11 @@ const SCREEN_CONFIG = [
   {
     name: "Login",
     component: LoginScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "ForgotPassword",
+    component: ForgotPassword,
     options: { headerShown: false },
   },
   {
