@@ -1,10 +1,13 @@
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as NavigationBar from "expo-navigation-bar";
 import { COLORS } from "../../constants/theme";
+import { AuthIntroLayout, EmptyStateLayout } from "../../components";
 
 const Chats = () => {
+  const [chatMesasages, setChatMessages] = useState([]);
+
   // Set phone's nav background color
   useEffect(() => {
     // Changes bg color to white
@@ -25,7 +28,19 @@ const Chats = () => {
 
       {/* Main body */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text>Chatssss</Text>
+        {chatMesasages?.length > 0 ? (
+          <Text>Chatssss</Text>
+        ) : (
+          <View style={styles.emptyViewContainer}>
+            <EmptyStateLayout
+              title={"Looking for messages?"}
+              img={"noChat"}
+              supportingText={
+                " Conversations will appear here as you start chatting."
+              }
+            />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -47,6 +62,13 @@ const styles = StyleSheet.create({
   loginImage: {
     resizeMode: "contain",
     height: 30,
+  },
+  emptyViewContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+    gap: 6,
   },
   scrollContainer: {
     flex: 1,
