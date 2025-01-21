@@ -7,6 +7,7 @@ import {
   Input,
   TopBarBackNavigation,
 } from "../../components";
+import { COLORS } from "../../constants/theme";
 
 const ChangeDefaultPasswordScreen = ({ navigation }) => {
   const [oldPassword, setOldPassword] = useState("");
@@ -85,7 +86,7 @@ const ChangeDefaultPasswordScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: COLORS.offWhite,
   },
   scrollContainer: {
     flexGrow: 1,

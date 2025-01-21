@@ -1,31 +1,32 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { COLORS } from "../constants/theme";
 
 const HomeScreen = ({ route, navigation }) => {
   const { user, token } = route.params;
 
   const renderContent = () => {
-    if (user.role === 'parent') {
+    if (user.role === "parent") {
       return (
         <View>
           <Text style={styles.welcomeText}>Welcome, Parent: {user.name}</Text>
           {/* Parent-specific options */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('ParentScreen')}
+            onPress={() => navigation.navigate("ParentScreen")}
           >
             <Text style={styles.buttonText}>Go to Parent Dashboard</Text>
           </TouchableOpacity>
         </View>
       );
-    } else if (user.role === 'teacher') {
+    } else if (user.role === "teacher") {
       return (
         <View>
           <Text style={styles.welcomeText}>Welcome, Teacher: {user.name}</Text>
           {/* Teacher-specific options */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('TeacherScreen')}
+            onPress={() => navigation.navigate("TeacherScreen")}
           >
             <Text style={styles.buttonText}>Go to Teacher Dashboard</Text>
           </TouchableOpacity>
@@ -42,38 +43,37 @@ const HomeScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.offWhite,
     padding: 16,
   },
   welcomeText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
   },
   button: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    backgroundColor: '#007bff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#007bff",
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 8,
     marginTop: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 16,
   },
 });
 
 export default HomeScreen;
-
 
 // import React from 'react';
 // import { View, Text, StyleSheet } from 'react-native';

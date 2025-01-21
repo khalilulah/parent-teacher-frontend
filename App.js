@@ -17,6 +17,7 @@ import {
   ForgotPassword,
   ResetPasswordScreen,
 } from "./screens/AuthScreens";
+import { MainAppNavigator } from "./navigation";
 
 // Font configuration
 const FONT_CONFIG = {
@@ -74,6 +75,11 @@ const SCREEN_CONFIG = [
     component: HomeScreen,
     options: {},
   },
+  {
+    name: "MainApp",
+    component: MainAppNavigator,
+    options: { headerShown: false },
+  },
 ];
 
 const Stack = createStackNavigator();
@@ -113,7 +119,7 @@ const App = () => {
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName="MainApp">
           {SCREEN_CONFIG.map(({ name, component, options }) => (
             <Stack.Screen
               key={name}

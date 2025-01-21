@@ -64,7 +64,8 @@ const LoginScreen = ({ navigation }) => {
       ToastAndroid.show("Password reset successfully", ToastAndroid.SHORT);
 
       //   Navigate to change default password screen
-      navigation.navigate("ChangeDefaultPassword");
+      navigation.navigate("MainApp");
+      // navigation.navigate("ChangeDefaultPassword");
     }, 2000);
   };
   return (
@@ -121,7 +122,7 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: COLORS.offWhite,
   },
   keyboardAvoidingContainer: {
     flex: 1,
