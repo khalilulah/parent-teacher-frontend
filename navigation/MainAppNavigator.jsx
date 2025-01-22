@@ -11,9 +11,11 @@ const MainAppNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarStyle: {
-          backgroundColor: "#ffffff", // Background color of the tab bar
+          backgroundColor: "white", // Background color of the tab bar
           shadowColor: "transparent",
-          borderColor: "transparent",
+          height: 60,
+          borderColor: COLORS.lightGray,
+          paddingTop: 10,
         },
         tabBarLabelStyle: {
           fontSize: 12, // Font size for labels

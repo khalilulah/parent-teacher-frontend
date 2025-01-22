@@ -18,6 +18,7 @@ import {
   ResetPasswordScreen,
 } from "./screens/AuthScreens";
 import { MainAppNavigator } from "./navigation";
+import { ChatScreen } from "./screens/GeneralScreens";
 
 // Font configuration
 const FONT_CONFIG = {
@@ -78,6 +79,13 @@ const SCREEN_CONFIG = [
   {
     name: "MainApp",
     component: MainAppNavigator,
+    options: { headerShown: false },
+  },
+
+  // Single Chat screen
+  {
+    name: "ChatScreen",
+    component: ChatScreen,
     options: { headerShown: false },
   },
 ];

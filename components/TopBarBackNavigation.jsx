@@ -3,9 +3,9 @@ import React from "react";
 import { COLORS } from "../constants/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const TopBarBackNavigation = ({ navigation, children }) => {
+const TopBarBackNavigation = ({ navigation, children, customStyle }) => {
   return (
-    <View style={styles.topBar}>
+    <View style={customStyle || styles.topBar}>
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         style={styles.container}
