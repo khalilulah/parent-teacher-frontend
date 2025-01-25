@@ -1,14 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import rootReducer from "./rootReducer";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { authApi } from "./actions/auth/authApi";
 
 const persistConfig = {
   key: "root",
-  storage,
+  storage: AsyncStorage,
   //   whitelist: ["auth"], // Only persist auth slice
 };
+const middlewares = [authApi.middleware];
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -17,7 +19,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false, // Avoid warnings with non-serializable data
-    }).concat([]), // Add any custom middleware here
+    }).concat(...middlewares), // Add any custom middleware here
 });
 
 setupListeners(store.dispatch); // Enables RTK Query's refetchOnFocus/refetchOnReconnect

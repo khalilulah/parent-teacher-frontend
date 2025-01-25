@@ -12,12 +12,13 @@ import axios from "axios";
 import { COLORS } from "../constants/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthIntroLayout, Button, Input } from "../components";
-import { Link } from "expo-router";
+import { useLoginMutation } from "../redux/actions/auth/authApi";
 
 const LoginScreen = ({ navigation }) => {
+  const [login, { isLoading }] = useLoginMutation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   // const handleLogin = async () => {
   //   if (!email || !password) {
@@ -51,22 +52,24 @@ const LoginScreen = ({ navigation }) => {
   //     setLoading(false);
   //   }
   // };
-  const handleLogin = () => {
-    if (!email || !password) {
-      ToastAndroid.show("Please fill in all fields", ToastAndroid.SHORT);
-      return;
+  const handleLogin = async () => {
+    try {
+      if (!email || !password) {
+        ToastAndroid.show("Please fill in all fields", ToastAndroid.SHORT);
+        return;
+      }
+
+      await login({ email, password }).unwrap();
+      ToastAndroid.show("Login successful", ToastAndroid.SHORT);
+
+      setTimeout(() => {
+        //   Navigate home
+        navigation.navigate("MainApp");
+      }, 2000);
+    } catch (error) {
+      console.error("Error logging in", error);
+      ToastAndroid.show(`Error logging in ${error?.error}`, ToastAndroid.SHORT);
     }
-
-    setLoading(true);
-    // Simulate password reset logic
-    setTimeout(() => {
-      setLoading(false);
-      ToastAndroid.show("Password reset successfully", ToastAndroid.SHORT);
-
-      //   Navigate to change default password screen
-      navigation.navigate("MainApp");
-      // navigation.navigate("ChangeDefaultPassword");
-    }, 2000);
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -110,9 +113,9 @@ const LoginScreen = ({ navigation }) => {
         </View>
 
         {/* CTA - (Login) */}
-        <Button onPress={handleLogin} disabled={loading}>
+        <Button onPress={handleLogin} disabled={isLoading}>
           {" "}
-          {loading ? "Please wait ..." : "Login"}
+          {isLoading ? "Please wait ..." : "Login"}
         </Button>
       </ScrollView>
     </SafeAreaView>
