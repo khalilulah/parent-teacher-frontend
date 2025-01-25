@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Toast from "react-native-toast-message";
 import { SplashScreen } from "expo-router";
 import { useFonts } from "expo-font";
+import { useSelector } from "react-redux";
 
 // Screen imports
 import {
@@ -19,6 +20,9 @@ import {
 } from "./screens/AuthScreens";
 import { MainAppNavigator } from "./navigation";
 import { ChatScreen } from "./screens/GeneralScreens";
+import { persistor, store } from "./redux/store";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 // Font configuration
 const FONT_CONFIG = {
@@ -101,6 +105,8 @@ const App = () => {
   // Load custom fonts and handle splash screen
   const [fontsLoaded, error] = useFonts(FONT_CONFIG);
 
+  const isUserLoggedIn = useSelector((state) => !!state.userLogin?.user);
+
   useEffect(() => {
     const handleInitialization = async () => {
       try {
@@ -127,7 +133,9 @@ const App = () => {
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="MainApp">
+        <Stack.Navigator
+          initialRouteName={isUserLoggedIn ? "MainApp" : "Login"}
+        >
           {SCREEN_CONFIG.map(({ name, component, options }) => (
             <Stack.Screen
               key={name}
