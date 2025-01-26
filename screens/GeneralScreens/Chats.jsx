@@ -1,88 +1,3 @@
-// import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-// import React, { useEffect, useState } from "react";
-// import { SafeAreaView } from "react-native-safe-area-context";
-// import * as NavigationBar from "expo-navigation-bar";
-// import { COLORS } from "../../constants/theme";
-// import { AuthIntroLayout, EmptyStateLayout } from "../../components";
-// import SingleChat from "./SingleChat";
-
-// const Chats = () => {
-//   const [chatMesasages, setChatMessages] = useState([1, 2, 3, 4]);
-
-//   // Set phone's nav background color
-//   useEffect(() => {
-//     // Changes bg color to white
-//     NavigationBar.setBackgroundColorAsync("white");
-
-//     // Changes button color to dark gray
-//     NavigationBar.setButtonStyleAsync("dark");
-//   }, []);
-//   return (
-//     <SafeAreaView style={styles.container}>
-//       {/* Logo */}
-//       <View style={styles.topBar}>
-//         <Image
-//           style={styles.loginImage}
-//           source={require("../../assets/icons/logoMini.png")}
-//         />
-//       </View>
-
-//       {/* Main body */}
-//       <ScrollView contentContainerStyle={styles.scrollContainer}>
-//         {chatMesasages?.length > 0 ? (
-//           chatMesasages?.map((singleMessage, index) => {
-//             return <SingleChat key={index} />;
-//           })
-//         ) : (
-//           <View style={styles.emptyViewContainer}>
-//             <EmptyStateLayout
-//               title={"Looking for messages?"}
-//               img={"noChat"}
-//               supportingText={
-//                 " Conversations will appear here as you start chatting."
-//               }
-//             />
-//           </View>
-//         )}
-//       </ScrollView>
-//     </SafeAreaView>
-//   );
-// };
-
-// export default Chats;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     backgroundColor: COLORS.offWhite,
-//     flex: 1,
-//   },
-//   topBar: {
-//     padding: 16,
-//     paddingTop: 24,
-//     paddingBottom: 0,
-//     flexDirection: "row",
-//     alignItems: "center",
-//   },
-//   loginImage: {
-//     resizeMode: "contain",
-//     height: 30,
-//   },
-//   emptyViewContainer: {
-//     flexGrow: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     padding: 16,
-//     gap: 6,
-//   },
-//   scrollContainer: {
-//     flex: 1,
-//     alignItems: "center",
-//     padding: 16,
-//     paddingTop: 40,
-//     gap: 8,
-//   },
-// });
-
 import {
   Image,
   ScrollView,
@@ -131,6 +46,20 @@ const Chats = ({ navigation }) => {
     };
   }, []);
 
+  // Function to return parsed text
+  const parseText = (text) => {
+    switch (text) {
+      case "superAdmin":
+        return "Super Admin";
+      case "teacher":
+        return "Teacher";
+      case "guardian":
+        return "Guardian";
+      default:
+        break;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Logo */}
@@ -139,19 +68,31 @@ const Chats = ({ navigation }) => {
           style={styles.loginImage}
           source={require("../../assets/icons/logoMini.png")}
         />
+        <View>
+          <Text style={styles.roleText}>{parseText(loggedInUser?.role)}</Text>
+          <Text style={styles.nameText}>
+            {loggedInUser?.firstname} {loggedInUser?.surname}
+          </Text>
+        </View>
       </View>
 
       {/* Main body */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {chatMessages?.length > 0 ? (
-          chatMessages.map((chat, index) => (
-            <SingleChat
-              key={index}
-              chat={chat}
-              navigation={navigation}
-              userId={userId}
-            />
-          ))
+          chatMessages.map((chat, index) => {
+            console.log(chat);
+            return (
+              <SingleChat
+                key={index}
+                chat={chat}
+                navigation={navigation}
+                userId={userId}
+                otherUser={chat?.participants?.find(
+                  (participant) => participant?._id !== userId
+                )}
+              />
+            );
+          })
         ) : (
           <View style={styles.emptyViewContainer}>
             <EmptyStateLayout
@@ -180,7 +121,20 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     paddingBottom: 0,
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+  },
+  roleText: {
+    fontSize: 16,
+    fontWeight: 500,
+    fontFamily: "Suse-Bold",
+    textAlign: "right",
+  },
+  nameText: {
+    fontSize: 14,
+    fontWeight: 500,
+    fontFamily: "Suse-Regular",
+    textAlign: "right",
   },
   loginImage: {
     resizeMode: "contain",

@@ -2,8 +2,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, FONTS } from "../../constants/theme";
 
-const SingleChat = ({ navigation, chat, userId }) => {
-  console.log(chat?.firstname);
+const SingleChat = ({ navigation, chat, userId, otherUser }) => {
+  console.log(otherUser?.firstname);
   return (
     <>
       <TouchableOpacity
@@ -20,12 +20,15 @@ const SingleChat = ({ navigation, chat, userId }) => {
         {/* Profile Image */}
         {/* Name and chat */}
         <View style={styles.profile}>
-          <Text style={styles.profileText}>AA</Text>
+          <Text style={styles.profileText}>
+            {otherUser?.firstname[0]?.toUpperCase()}
+            {otherUser?.surname[0]?.toUpperCase()}
+          </Text>
         </View>
 
         {/* Name and chat */}
         <View style={styles.mainChatItem}>
-          <Text style={styles.mainChatItemTitle}>{chat?.firstname}</Text>
+          <Text style={styles.mainChatItemTitle}>{otherUser?.firstname}</Text>
           <Text style={styles.mainChatItemSupport}>SingleChat</Text>
         </View>
 
