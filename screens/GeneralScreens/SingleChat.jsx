@@ -2,14 +2,17 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, FONTS } from "../../constants/theme";
 
-const SingleChat = ({ navigation, chat }) => {
+const SingleChat = ({ navigation, chat, userId }) => {
+  console.log(chat?.firstname);
   return (
     <>
       <TouchableOpacity
         onPress={() =>
           navigation.navigate("ChatScreen", {
             chatId: chat.id,
-            name: chat.name,
+            name: chat.firstname,
+            receiverId: chat?._id,
+            userId,
           })
         }
         style={styles.container}
@@ -22,7 +25,7 @@ const SingleChat = ({ navigation, chat }) => {
 
         {/* Name and chat */}
         <View style={styles.mainChatItem}>
-          <Text style={styles.mainChatItemTitle}>Alausa Abdulazeez</Text>
+          <Text style={styles.mainChatItemTitle}>{chat?.firstname}</Text>
           <Text style={styles.mainChatItemSupport}>SingleChat</Text>
         </View>
 

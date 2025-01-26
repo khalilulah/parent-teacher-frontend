@@ -105,7 +105,7 @@ const App = () => {
   // Load custom fonts and handle splash screen
   const [fontsLoaded, error] = useFonts(FONT_CONFIG);
 
-  const isUserLoggedIn = useSelector((state) => !!state.userLogin?.user);
+  const isUserLoggedIn = useSelector((state) => !!state.auth?.user);
 
   useEffect(() => {
     const handleInitialization = async () => {

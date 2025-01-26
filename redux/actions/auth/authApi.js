@@ -22,7 +22,11 @@ export const authApi = createApi({
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          dispatch(setCredentials(data)); // Save token and user in the store
+          const loginResponse = {
+            token: data?.data?.token,
+            user: data?.data,
+          };
+          dispatch(setCredentials(loginResponse)); // Save token and user in the store
         } catch (error) {
           console.error("Login failed:", error);
         }

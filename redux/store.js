@@ -4,13 +4,14 @@ import rootReducer from "./rootReducer";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authApi } from "./actions/auth/authApi";
+import { chatsApi } from "./actions/chat/chatsApi";
 
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
   //   whitelist: ["auth"], // Only persist auth slice
 };
-const middlewares = [authApi.middleware];
+const middlewares = [authApi.middleware, chatsApi.middleware];
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

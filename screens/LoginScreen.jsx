@@ -64,8 +64,8 @@ const LoginScreen = ({ navigation }) => {
 
       setTimeout(() => {
         //   Navigate home
-        navigation.navigate("MainApp");
-      }, 2000);
+        navigation.replace("MainApp");
+      }, 200);
     } catch (error) {
       console.error("Error logging in", error);
       ToastAndroid.show(`Error logging in ${error?.error}`, ToastAndroid.SHORT);

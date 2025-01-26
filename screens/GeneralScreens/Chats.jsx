@@ -98,19 +98,37 @@ import * as NavigationBar from "expo-navigation-bar";
 import { COLORS } from "../../constants/theme";
 import { EmptyStateLayout } from "../../components";
 import SingleChat from "./SingleChat";
+import { useSelector } from "react-redux";
+import { socket } from "../../utils/socket";
 
 const Chats = ({ navigation }) => {
-  const [chatMessages, setChatMessages] = useState([
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Jane Smith" },
-    { id: 3, name: "Mike Johnson" },
-    { id: 4, name: "Emily Davis" },
-  ]);
+  const loggedInUser = useSelector((state) => state.auth?.user); //Logged in user
+
+  const userId = loggedInUser?._id; // Replace with the actual user ID
+
+  const [chatMessages, setChatMessages] = useState([]);
 
   useEffect(() => {
     // Set phone's nav background color
     NavigationBar.setBackgroundColorAsync("white");
     NavigationBar.setButtonStyleAsync("dark");
+
+    socket.emit("identify_user", userId); // Send user ID to the server
+
+    socket.on("user_identified", () => {
+      socket.emit("get_users", userId);
+    });
+  }, []);
+
+  useEffect(() => {
+    // Listen for incoming users
+    socket.on("send_users", (data) => {
+      setChatMessages(data);
+    });
+
+    return () => {
+      socket.off("send_users");
+    };
   }, []);
 
   return (
@@ -127,7 +145,12 @@ const Chats = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {chatMessages?.length > 0 ? (
           chatMessages.map((chat, index) => (
-            <SingleChat key={index} chat={chat} navigation={navigation} />
+            <SingleChat
+              key={index}
+              chat={chat}
+              navigation={navigation}
+              userId={userId}
+            />
           ))
         ) : (
           <View style={styles.emptyViewContainer}>
