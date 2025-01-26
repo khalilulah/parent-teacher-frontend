@@ -8,7 +8,7 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TopBarBackNavigation } from "../../components";
 import { Ionicons } from "@expo/vector-icons";
@@ -24,25 +24,29 @@ import { addMessage, setMessages } from "../../redux/slices/chat/chatSlice";
 const ChatScreen = ({ route, navigation }) => {
   const { chatId, name, userId, receiverId } = route.params; // Extract passed data
   const dispatch = useDispatch();
-  const messages = useSelector(
-    (state) => state.chat.messages[receiverId] || []
-  );
-  const allMessages = useSelector((state) => state.chat.messages || []);
+  const messages = useSelector((state) => state.chat.messages[chatId] || []);
   const [currentMessage, setCurrentMessage] = useState("");
+  const flatListRef = useRef(null); // Create a ref for the FlatList
 
   useEffect(() => {
     // Fetch messages using RTK Query
     dispatch(
-      chatsApi.endpoints.fetchChats.initiate({
-        userId,
-        otherUserId: receiverId,
-      })
+      chatsApi.endpoints.fetchChats.initiate(
+        { chatId },
+        { forceRefetch: true } // This option bypasses the cache
+      )
     )
       .unwrap()
       .then((data) => {
-        dispatch(setMessages({ userId: receiverId, messages: data.data }));
+        dispatch(setMessages({ chatId, messages: data.data }));
+        console.log("Setting message");
       });
-  }, [userId, receiverId, dispatch]);
+
+    // Scroll to the bottom
+    if (flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: false });
+    }
+  }, [chatId, dispatch]);
 
   useEffect(() => {
     // Set status bar color
@@ -51,7 +55,7 @@ const ChatScreen = ({ route, navigation }) => {
 
     // Listen for incoming messages
     socket.on("receive_message", (message) => {
-      dispatch(addMessage({ userId: message.sender, message }));
+      dispatch(addMessage({ chatId, message }));
     });
 
     return () => {
@@ -63,62 +67,25 @@ const ChatScreen = ({ route, navigation }) => {
     if (currentMessage.trim()) {
       const messageData = {
         sender: userId,
-        receiver: receiverId,
         message: currentMessage,
+        chatId,
       };
 
       socket.emit("send_message", messageData); // Emit the message to the server
       // Optimistically update the local state
-      dispatch(addMessage({ userId: receiverId, message: currentMessage }));
+      dispatch(addMessage({ chatId, message: currentMessage }));
       setCurrentMessage(""); // Clear input
     }
   };
+  useEffect(() => {
+    // Join chat room
+    socket.emit("join_chat", chatId);
 
-  // if (isLoading) {
-  //   return (
-  //     <SafeAreaView style={styles.container}>
-  //       {/* Top bar */}
-  //       <TopBarBackNavigation
-  //         navigation={navigation}
-  //         customStyle={{
-  //           padding: 16,
-  //           flexDirection: "row",
-  //           alignItems: "center",
-  //           backgroundColor: "white",
-  //         }}
-  //       >
-  //         <Text style={styles.headerTitle}>Loading chats...</Text>
-  //       </TopBarBackNavigation>
-  //     </SafeAreaView>
-  //   );
-  // }
-
-  // if (error) {
-  //   return (
-  //     <SafeAreaView style={styles.container}>
-  //       {/* Top bar */}
-  //       <TopBarBackNavigation
-  //         navigation={navigation}
-  //         customStyle={{
-  //           padding: 16,
-  //           flexDirection: "row",
-  //           alignItems: "center",
-  //           backgroundColor: "white",
-  //         }}
-  //       >
-  //         <Text style={styles.headerTitle}>Back</Text>
-  //       </TopBarBackNavigation>
-  //       <View style={styles.messageBubble}>
-  //         <Text style={styles.sender}>
-  //           {error?.data?.message ||
-  //             error?.data ||
-  //             error?.message ||
-  //             "An error occured"}
-  //         </Text>
-  //       </View>
-  //     </SafeAreaView>
-  //   );
-  // }
+    return () => {
+      // Leave the room when the screen is closed
+      socket.emit("leave_chat", chatId);
+    };
+  }, [chatId]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -135,33 +102,27 @@ const ChatScreen = ({ route, navigation }) => {
         <Text style={styles.headerTitle}>{name}</Text>
       </TopBarBackNavigation>
 
-      {/* <ScrollView contentContainerStyle={styles.chatContainer}>
-        {messages?.map((chat, index) => (
-          <View key={index} style={styles.messageBubble}>
-            <Text style={styles.sender}>{chat.firstname}:</Text>
-            <Text style={styles.message}>{chat.message}</Text>
-          </View>
-        ))}
-      </ScrollView> */}
-
       {/* Chat List */}
       <FlatList
         data={messages}
+        ref={flatListRef} // Attach the ref to the FlatList
         style={{ padding: 8 }}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Text
-            style={{
-              padding: 8,
-              backgroundColor: item.sender === userId ? "#d1ddff" : "#ffffff",
-              alignSelf: item.sender === userId ? "flex-end" : "flex-start",
-              marginBottom: 10,
-              borderRadius: 8,
-            }}
-          >
-            {item.message}
-          </Text>
-        )}
+        renderItem={({ item }) =>
+          item.message && (
+            <Text
+              style={{
+                padding: 8,
+                backgroundColor: item.sender === userId ? "#d1ddff" : "#ffffff",
+                alignSelf: item.sender === userId ? "flex-end" : "flex-start",
+                marginBottom: 10,
+                borderRadius: 8,
+              }}
+            >
+              {item.message}
+            </Text>
+          )
+        }
       />
       <View style={styles.inputContainer}>
         <TextInput

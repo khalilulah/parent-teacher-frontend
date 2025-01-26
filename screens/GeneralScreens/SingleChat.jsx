@@ -3,14 +3,13 @@ import React from "react";
 import { COLORS, FONTS } from "../../constants/theme";
 
 const SingleChat = ({ navigation, chat, userId, otherUser }) => {
-  console.log(otherUser?.firstname);
   return (
     <>
       <TouchableOpacity
         onPress={() =>
           navigation.navigate("ChatScreen", {
-            chatId: chat.id,
-            name: chat.firstname,
+            chatId: chat?.chatId,
+            name: otherUser?.firstname,
             receiverId: chat?._id,
             userId,
           })

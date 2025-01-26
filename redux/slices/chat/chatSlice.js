@@ -3,19 +3,19 @@ import { createSlice } from "@reduxjs/toolkit";
 const chatSlice = createSlice({
   name: "chat",
   initialState: {
-    messages: {}, // { userId: [messages] }
+    messages: {}, // { chatId: [messages] }
   },
   reducers: {
     setMessages(state, action) {
-      const { userId, messages } = action.payload;
-      state.messages[userId] = messages;
+      const { chatId, messages } = action.payload;
+      state.messages[chatId] = [...messages];
     },
     addMessage(state, action) {
-      const { userId, message } = action.payload;
-      if (!state.messages[userId]) {
-        state.messages[userId] = [];
+      const { chatId, message } = action.payload;
+      if (!state.messages[chatId]) {
+        state.messages[chatId] = [];
       }
-      state.messages[userId].push(message);
+      state.messages[chatId] = [...state.messages[chatId], message];
     },
   },
 });

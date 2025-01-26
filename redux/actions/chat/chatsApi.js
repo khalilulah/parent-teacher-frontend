@@ -13,7 +13,7 @@ export const chatsApi = createApi({
   }),
   endpoints: (builder) => ({
     fetchChats: builder.query({
-      query: ({ userId, otherUserId }) => `/messages/${userId}/${otherUserId}`,
+      query: ({ chatId }) => `/messages/${chatId}`,
     }),
   }),
 });

@@ -80,7 +80,6 @@ const Chats = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {chatMessages?.length > 0 ? (
           chatMessages.map((chat, index) => {
-            console.log(chat);
             return (
               <SingleChat
                 key={index}
