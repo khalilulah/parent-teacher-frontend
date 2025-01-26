@@ -9,7 +9,7 @@ import { chatsApi } from "./actions/chat/chatsApi";
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  //   whitelist: ["auth"], // Only persist auth slice
+  whitelist: ["auth", "chat"], // Only persist auth slice
 };
 const middlewares = [authApi.middleware, chatsApi.middleware];
 

@@ -6,32 +6,46 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TopBarBackNavigation } from "../../components";
 import { Ionicons } from "@expo/vector-icons";
 import { BASE_URL, SOCKET_BASE_URL } from "../../utils/utilFunctions";
-import { useFetchChatsQuery } from "../../redux/actions/chat/chatsApi";
+import {
+  chatsApi,
+  useFetchChatsQuery,
+} from "../../redux/actions/chat/chatsApi";
 import { socket } from "../../utils/socket";
+import { useDispatch, useSelector } from "react-redux";
+import { addMessage, setMessages } from "../../redux/slices/chat/chatSlice";
 
 const ChatScreen = ({ route, navigation }) => {
   const { chatId, name, userId, receiverId } = route.params; // Extract passed data
+  const dispatch = useDispatch();
+  const messages = useSelector(
+    (state) => state.chat.messages[receiverId] || []
+  );
+  const allMessages = useSelector((state) => state.chat.messages || []);
   const [currentMessage, setCurrentMessage] = useState("");
-  const [chatMessages, setChatMessages] = useState([]);
-  const { data, isLoading, error } = useFetchChatsQuery({
-    userId,
-    otherUserId: receiverId,
-  });
 
-  // Sync fetched data with chatMessages
+  console.log(messages);
+  console.log(allMessages);
+
   useEffect(() => {
-    if (data) {
-      setChatMessages(data?.data); // Update only when `data` changes
-    }
-  }, [data]);
-
-  console.log(data);
+    // Fetch messages using RTK Query
+    dispatch(
+      chatsApi.endpoints.fetchChats.initiate({
+        userId,
+        otherUserId: receiverId,
+      })
+    )
+      .unwrap()
+      .then((data) => {
+        dispatch(setMessages({ userId: receiverId, messages: data.data }));
+      });
+  }, [userId, receiverId, dispatch]);
 
   useEffect(() => {
     // Set status bar color
@@ -40,7 +54,7 @@ const ChatScreen = ({ route, navigation }) => {
 
     // Listen for incoming messages
     socket.on("receive_message", (message) => {
-      setChatMessages((prevMessages) => [...prevMessages, message]); // Append new messages
+      dispatch(addMessage({ userId: message.sender, message }));
     });
 
     return () => {
@@ -57,51 +71,57 @@ const ChatScreen = ({ route, navigation }) => {
       };
 
       socket.emit("send_message", messageData); // Emit the message to the server
-      setChatMessages((prevMessages) => [...prevMessages, messageData]); // Optimistic update
+      // Optimistically update the local state
+      dispatch(addMessage({ userId: receiverId, message: currentMessage }));
       setCurrentMessage(""); // Clear input
     }
   };
 
-  if (isLoading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        {/* Top bar */}
-        <TopBarBackNavigation
-          navigation={navigation}
-          customStyle={{
-            padding: 16,
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "white",
-          }}
-        >
-          <Text style={styles.headerTitle}>Loading chats...</Text>
-        </TopBarBackNavigation>
-      </SafeAreaView>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <SafeAreaView style={styles.container}>
+  //       {/* Top bar */}
+  //       <TopBarBackNavigation
+  //         navigation={navigation}
+  //         customStyle={{
+  //           padding: 16,
+  //           flexDirection: "row",
+  //           alignItems: "center",
+  //           backgroundColor: "white",
+  //         }}
+  //       >
+  //         <Text style={styles.headerTitle}>Loading chats...</Text>
+  //       </TopBarBackNavigation>
+  //     </SafeAreaView>
+  //   );
+  // }
 
-  if (error) {
-    return (
-      <SafeAreaView style={styles.container}>
-        {/* Top bar */}
-        <TopBarBackNavigation
-          navigation={navigation}
-          customStyle={{
-            padding: 16,
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "white",
-          }}
-        >
-          <Text style={styles.headerTitle}>Back</Text>
-        </TopBarBackNavigation>
-        <View style={styles.messageBubble}>
-          <Text style={styles.sender}>{error?.data?.message}</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <SafeAreaView style={styles.container}>
+  //       {/* Top bar */}
+  //       <TopBarBackNavigation
+  //         navigation={navigation}
+  //         customStyle={{
+  //           padding: 16,
+  //           flexDirection: "row",
+  //           alignItems: "center",
+  //           backgroundColor: "white",
+  //         }}
+  //       >
+  //         <Text style={styles.headerTitle}>Back</Text>
+  //       </TopBarBackNavigation>
+  //       <View style={styles.messageBubble}>
+  //         <Text style={styles.sender}>
+  //           {error?.data?.message ||
+  //             error?.data ||
+  //             error?.message ||
+  //             "An error occured"}
+  //         </Text>
+  //       </View>
+  //     </SafeAreaView>
+  //   );
+  // }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -118,14 +138,34 @@ const ChatScreen = ({ route, navigation }) => {
         <Text style={styles.headerTitle}>{name}</Text>
       </TopBarBackNavigation>
 
-      <ScrollView contentContainerStyle={styles.chatContainer}>
-        {chatMessages?.map((chat, index) => (
+      {/* <ScrollView contentContainerStyle={styles.chatContainer}>
+        {messages?.map((chat, index) => (
           <View key={index} style={styles.messageBubble}>
             <Text style={styles.sender}>{chat.firstname}:</Text>
             <Text style={styles.message}>{chat.message}</Text>
           </View>
         ))}
-      </ScrollView>
+      </ScrollView> */}
+
+      {/* Chat List */}
+      <FlatList
+        data={messages}
+        style={{ padding: 8 }}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <Text
+            style={{
+              padding: 8,
+              backgroundColor: item.sender === userId ? "#d1ddff" : "#ffffff",
+              alignSelf: item.sender === userId ? "flex-end" : "flex-start",
+              marginBottom: 10,
+              borderRadius: 8,
+            }}
+          >
+            {item.message}
+          </Text>
+        )}
+      />
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
