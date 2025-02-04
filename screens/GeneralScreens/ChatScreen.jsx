@@ -49,8 +49,6 @@ const ChatScreen = ({ route, navigation }) => {
         dispatch(setMessages({ chatId, messages: data.data }));
         console.log("Setting message");
       });
-
-
   }, [chatId, dispatch]);
 
   useEffect(() => {
@@ -128,7 +126,7 @@ const ChatScreen = ({ route, navigation }) => {
     }
 
     socket.emit("send_message", messageData);
-    dispatch(addMessage({ chatId, message: messageData }));
+    // dispatch(addMessage({ chatId, message: messageData }));
     setCurrentMessage("");
   };
 

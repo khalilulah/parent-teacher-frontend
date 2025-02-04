@@ -8,25 +8,34 @@ import {
   TopBarBackNavigation,
 } from "../../components";
 import { COLORS } from "../../constants/theme";
+import { useSendOtpMutation } from "../../redux/actions/auth/authApi";
 
 const ForgotPasswordScreen = ({ navigation }) => {
+  const [sendOtp, { isLoading }] = useSendOtpMutation();
+
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSendOTP = () => {
-    if (!email) {
-      ToastAndroid.show("Please enter your email address", ToastAndroid.SHORT);
-      return;
-    }
+  const handleSendOTP = async () => {
+    try {
+      if (!email) {
+        ToastAndroid.show(
+          "Please enter your email address",
+          ToastAndroid.SHORT
+        );
+        return;
+      }
 
-    setLoading(true);
-    // Simulate OTP sending logic
-    setTimeout(() => {
-      setLoading(false);
-      ToastAndroid.show("OTP sent successfully", ToastAndroid.SHORT);
-      // Navigate to OTP verification screen
-      navigation.navigate("ResetPassword");
-    }, 2000);
+      await sendOtp({ email }).unwrap();
+      ToastAndroid.show("OTP successfully sent", ToastAndroid.SHORT);
+
+      setTimeout(() => {
+        //   Navigate to the ResetPassword screen
+        navigation.navigate("ResetPassword");
+      }, 200);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -60,8 +69,8 @@ const ForgotPasswordScreen = ({ navigation }) => {
         </View>
 
         {/* CTA - Send OTP */}
-        <Button onPress={handleSendOTP} disabled={loading}>
-          {loading ? "Sending OTP..." : "Send OTP"}
+        <Button onPress={handleSendOTP} disabled={isLoading}>
+          {isLoading ? "Sending OTP..." : "Send OTP"}
         </Button>
       </ScrollView>
     </SafeAreaView>

@@ -32,7 +32,22 @@ export const authApi = createApi({
         }
       },
     }),
+    sendOtp: builder.mutation({
+      query: (credentials) => ({
+        url: "/auth/sendOtp",
+        method: "POST",
+        body: credentials,
+      }),
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          console.log(data);
+        } catch (error) {
+          console.error("OTP sending failed:", error);
+        }
+      },
+    }),
   }),
 });
 
-export const { useLoginMutation } = authApi;
+export const { useLoginMutation, useSendOtpMutation } = authApi;

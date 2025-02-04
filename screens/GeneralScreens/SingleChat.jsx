@@ -31,8 +31,16 @@ const SingleChat = ({ navigation, chat, userId, otherUser }) => {
           <Text style={styles.mainChatItemSupport}>SingleChat</Text>
         </View>
 
-        {/* Date */}
-        <Text style={styles.time}>Today</Text>
+        {/* RHS CONTAINER - (Date and Unread messages notification) */}
+        <View style={styles.rhsContainer}>
+          {/* Date */}
+          <Text style={styles.time}>Today</Text>
+
+          {/* Unread messages */}
+          <View style={styles.notificationItem}>
+            <Text style={styles.mainChatItemSupport}>SingleChat</Text>
+          </View>
+        </View>
       </TouchableOpacity>
     </>
   );
@@ -65,6 +73,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 4,
   },
+  notificationItem: {
+    flex: 1,
+    padding: 4,
+    backgroundColor: COLORS.primary,
+  },
   mainChatItemTitle: {
     fontFamily: "Suse-SemiBold",
     fontSize: FONTS.medium,
@@ -76,6 +89,11 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     color: COLORS.darkGray,
   },
+
+  rhsContainer: {
+    justifyContent: "space-between",
+  },
+
   time: {
     fontFamily: "Suse-SemiBold",
     paddingTop: 4,
