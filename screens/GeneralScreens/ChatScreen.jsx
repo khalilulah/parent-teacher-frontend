@@ -8,6 +8,7 @@ import {
   ScrollView,
   FlatList,
   Image,
+  Linking,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -49,10 +50,7 @@ const ChatScreen = ({ route, navigation }) => {
         console.log("Setting message");
       });
 
-    // Scroll to the bottom
-    if (flatListRef.current) {
-      flatListRef.current.scrollToEnd({ animated: false });
-    }
+
   }, [chatId, dispatch]);
 
   useEffect(() => {
@@ -163,10 +161,11 @@ const ChatScreen = ({ route, navigation }) => {
 
       {/* Chat List */}
       <FlatList
-        data={messages}
-        ref={flatListRef} // Attach the ref to the FlatList
+        data={[...messages].reverse()} // Reverse messages so the newest appears at the bottom
+        ref={flatListRef}
         style={{ padding: 8 }}
         keyExtractor={(item, index) => index.toString()}
+        inverted // This makes FlatList scroll from bottom to top
         renderItem={({ item }) => (
           <View
             style={{
@@ -192,6 +191,7 @@ const ChatScreen = ({ route, navigation }) => {
           </View>
         )}
       />
+
       <View style={styles.inputContainer}>
         <TouchableOpacity
           style={styles.attachButton}
