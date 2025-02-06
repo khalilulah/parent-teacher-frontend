@@ -150,7 +150,7 @@ const ChatScreen = ({ route, navigation }) => {
   }, [chatId]);
 
   const renderMessageItem = ({ item, index }) => {
-    const prevMessage = messages[index - 1];
+    const prevMessage = [...messages]?.reverse()[1 + index];
 
     const showDateHeader =
       !prevMessage ||
@@ -188,9 +188,15 @@ const ChatScreen = ({ route, navigation }) => {
               style={{ width: 200, height: 200, borderRadius: 8 }}
             />
           ) : item.fileUrl ? (
-            <TouchableOpacity onPress={() => Linking.openURL(item.fileUrl)}>
-              <Text style={{ color: "blue" }}>View File</Text>
-            </TouchableOpacity>
+            <View style={{ marginTop: 5 }}>
+              <Text style={{ fontWeight: "bold" }}>{item.fileName}</Text>
+              <Text style={{ fontSize: 12, color: "gray" }}>
+                {(item.fileSize / 1024).toFixed(1)} KB
+              </Text>
+              <TouchableOpacity onPress={() => Linking.openURL(item.fileUrl)}>
+                <Text style={{ color: "blue" }}>View File</Text>
+              </TouchableOpacity>
+            </View>
           ) : null}
 
           <Text style={{ fontSize: 10, color: "#888", marginTop: 5 }}>
@@ -228,11 +234,11 @@ const ChatScreen = ({ route, navigation }) => {
       {/* Chat List */}
       {messages?.length > 0 && (
         <FlatList
-          data={[...messages]} // Reverse messages so the newest appears at the bottom
+          data={[...messages].reverse()} // Reverse messages so the newest appears at the bottom
           ref={flatListRef}
           style={{ padding: 8 }}
           keyExtractor={(item, index) => index.toString()}
-          // inverted // This makes FlatList scroll from bottom to top
+          inverted // This makes FlatList scroll from bottom to top
           renderItem={renderMessageItem}
         />
       )}
