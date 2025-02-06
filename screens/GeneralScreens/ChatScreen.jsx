@@ -11,6 +11,7 @@ import {
   Linking,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TopBarBackNavigation } from "../../components";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,6 +27,7 @@ import { addMessage, setMessages } from "../../redux/slices/chat/chatSlice";
 import * as DocumentPicker from "expo-document-picker";
 import { ActivityIndicator } from "react-native";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import moment from "moment";
 
 const ChatScreen = ({ route, navigation }) => {
   const { chatId, name, userId, receiverId } = route.params; // Extract passed data
@@ -35,6 +37,11 @@ const ChatScreen = ({ route, navigation }) => {
   const flatListRef = useRef(null); // Create a ref for the FlatList
   const storage = getStorage();
   const [isUploading, setIsUploading] = useState(false);
+
+  // Function to format timestamp
+  const formatTimestamp = (timestamp) => {
+    return moment(timestamp).format("h:mm A"); // E.g., "4:30 PM"
+  };
 
   useEffect(() => {
     // Fetch messages using RTK Query
@@ -142,6 +149,67 @@ const ChatScreen = ({ route, navigation }) => {
     };
   }, [chatId]);
 
+  const renderMessageItem = ({ item, index }) => {
+    const prevMessage = messages[index - 1];
+
+    const showDateHeader =
+      !prevMessage ||
+      moment(item.timestamp).format("LL") !==
+        moment(prevMessage?.timestamp).format("LL");
+
+    return (
+      <>
+        {showDateHeader && (
+          <Text
+            style={{ alignSelf: "center", marginVertical: 5, color: "#888" }}
+          >
+            {moment(item.timestamp).calendar(null, {
+              sameDay: "[Today]",
+              lastDay: "[Yesterday]",
+              lastWeek: "dddd, MMM D",
+              sameElse: "MMMM D, YYYY",
+            })}
+          </Text>
+        )}
+        <View
+          style={{
+            padding: 8,
+            backgroundColor: item.sender === userId ? "#d1ddff" : "#ffffff",
+            alignSelf: item.sender === userId ? "flex-end" : "flex-start",
+            marginBottom: 10,
+            borderRadius: 8,
+          }}
+        >
+          {item.message && <Text>{item.message}</Text>}
+
+          {item.fileUrl && item.fileType.includes("image") ? (
+            <Image
+              source={{ uri: item.fileUrl }}
+              style={{ width: 200, height: 200, borderRadius: 8 }}
+            />
+          ) : item.fileUrl ? (
+            <TouchableOpacity onPress={() => Linking.openURL(item.fileUrl)}>
+              <Text style={{ color: "blue" }}>View File</Text>
+            </TouchableOpacity>
+          ) : null}
+
+          <Text style={{ fontSize: 10, color: "#888", marginTop: 5 }}>
+            {formatTimestamp(item.timestamp)}
+            {item.sender === userId && (
+              <Text style={{ fontWeight: "bold", marginLeft: 5 }}>
+                {item.status === "read"
+                  ? " ✓✓"
+                  : item.status === "delivered"
+                  ? " ✓"
+                  : " ⏳"}
+              </Text>
+            )}
+          </Text>
+        </View>
+      </>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Top bar */}
@@ -158,37 +226,16 @@ const ChatScreen = ({ route, navigation }) => {
       </TopBarBackNavigation>
 
       {/* Chat List */}
-      <FlatList
-        data={[...messages].reverse()} // Reverse messages so the newest appears at the bottom
-        ref={flatListRef}
-        style={{ padding: 8 }}
-        keyExtractor={(item, index) => index.toString()}
-        inverted // This makes FlatList scroll from bottom to top
-        renderItem={({ item }) => (
-          <View
-            style={{
-              padding: 8,
-              backgroundColor: item.sender === userId ? "#d1ddff" : "#ffffff",
-              alignSelf: item.sender === userId ? "flex-end" : "flex-start",
-              marginBottom: 10,
-              borderRadius: 8,
-            }}
-          >
-            {item.message && <Text>{item.message}</Text>}
-
-            {item.fileUrl && item.fileType.includes("image") ? (
-              <Image
-                source={{ uri: item.fileUrl }}
-                style={{ width: 200, height: 200, borderRadius: 8 }}
-              />
-            ) : item.fileUrl ? (
-              <TouchableOpacity onPress={() => Linking.openURL(item.fileUrl)}>
-                <Text style={{ color: "blue" }}>View File</Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-        )}
-      />
+      {messages?.length > 0 && (
+        <FlatList
+          data={[...messages]} // Reverse messages so the newest appears at the bottom
+          ref={flatListRef}
+          style={{ padding: 8 }}
+          keyExtractor={(item, index) => index.toString()}
+          // inverted // This makes FlatList scroll from bottom to top
+          renderItem={renderMessageItem}
+        />
+      )}
 
       <View style={styles.inputContainer}>
         <TouchableOpacity
