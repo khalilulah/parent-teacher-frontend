@@ -13,7 +13,11 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TopBarBackNavigation } from "../../components";
+import {
+  DocumentPreview,
+  ImageViewerModal,
+  TopBarBackNavigation,
+} from "../../components";
 import { Ionicons } from "@expo/vector-icons";
 import { storage } from "../../utils/firebaseConfig";
 import { BASE_URL, SOCKET_BASE_URL } from "../../utils/utilFunctions";
@@ -37,6 +41,12 @@ const ChatScreen = ({ route, navigation }) => {
   const flatListRef = useRef(null); // Create a ref for the FlatList
   const storage = getStorage();
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedFileDetails, setSelectedFileDetails] = useState({
+    fileName: "",
+    fileSize: null,
+  });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageViewerVisible, setImageViewerVisible] = useState(false);
 
   // Function to format timestamp
   const formatTimestamp = (timestamp) => {
@@ -88,7 +98,8 @@ const ChatScreen = ({ route, navigation }) => {
         return null;
       }
 
-      const { uri, name: fileName, mimeType } = result.assets[0];
+      const { uri, name: fileName, mimeType, size } = result.assets[0];
+      setSelectedFileDetails({ fileName, fileSize: size });
 
       // Create a reference to the file in Firebase Storage
       const storageRef = ref(storage, `chatFiles/${Date.now()}_${fileName}`);
@@ -130,6 +141,8 @@ const ChatScreen = ({ route, navigation }) => {
 
       messageData.fileUrl = fileData.fileUrl;
       messageData.fileType = fileData.fileType;
+      messageData.fileName = selectedFileDetails.fileName;
+      messageData.fileSize = selectedFileDetails.fileSize;
     }
 
     socket.emit("send_message", messageData);
@@ -181,22 +194,26 @@ const ChatScreen = ({ route, navigation }) => {
           }}
         >
           {item.message && <Text>{item.message}</Text>}
-
           {item.fileUrl && item.fileType.includes("image") ? (
-            <Image
-              source={{ uri: item.fileUrl }}
-              style={{ width: 200, height: 200, borderRadius: 8 }}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedImage(item.fileUrl);
+                setImageViewerVisible(true);
+              }}
+            >
+              <Image
+                source={{ uri: item.fileUrl }}
+                style={{ width: 200, height: 200, borderRadius: 8 }}
+              />
+            </TouchableOpacity>
           ) : item.fileUrl ? (
-            <View style={{ marginTop: 5 }}>
-              <Text style={{ fontWeight: "bold" }}>{item.fileName}</Text>
-              <Text style={{ fontSize: 12, color: "gray" }}>
-                {(item.fileSize / 1024).toFixed(1)} KB
-              </Text>
-              <TouchableOpacity onPress={() => Linking.openURL(item.fileUrl)}>
-                <Text style={{ color: "blue" }}>View File</Text>
-              </TouchableOpacity>
-            </View>
+            <DocumentPreview
+              fileUrl={item.fileUrl}
+              fileType={item.fileType}
+              fileName={item.fileName}
+              fileSize={item.fileSize}
+              item={item}
+            />
           ) : null}
 
           <Text style={{ fontSize: 10, color: "#888", marginTop: 5 }}>
@@ -269,6 +286,14 @@ const ChatScreen = ({ route, navigation }) => {
           <Ionicons name="send" size={24} color="white" />
         </TouchableOpacity>
       </View>
+      <ImageViewerModal
+        visible={imageViewerVisible}
+        imageUrl={selectedImage}
+        onClose={() => {
+          setImageViewerVisible(false);
+          setSelectedImage(null);
+        }}
+      />
     </SafeAreaView>
   );
 };
