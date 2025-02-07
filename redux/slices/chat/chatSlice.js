@@ -4,6 +4,7 @@ const chatSlice = createSlice({
   name: "chat",
   initialState: {
     messages: {}, // { chatId: [messages] }
+    chatList: [],
   },
   reducers: {
     setMessages(state, action) {
@@ -17,8 +18,13 @@ const chatSlice = createSlice({
       }
       state.messages[chatId] = [...state.messages[chatId], message];
     },
+    setChatList(state, action) {
+      const { chatList } = action.payload;
+      console.log("chatlist", chatList);
+      state.chatList = chatList;
+    },
   },
 });
 
-export const { setMessages, addMessage } = chatSlice.actions;
+export const { setMessages, addMessage, setChatList } = chatSlice.actions;
 export default chatSlice.reducer;

@@ -1,13 +1,19 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, FONTS } from "../../constants/theme";
-import { format } from "date-fns";
+import { format, isToday, isYesterday } from "date-fns";
 
 const SingleChat = ({ navigation, chat, userId, otherUser }) => {
-  const { lastMessage, unreadCount } = chat;
-
   const formatTime = (time) => {
-    return format(new Date(time), "hh:mm a");
+    const date = new Date(time);
+
+    if (isToday(date)) {
+      return format(date, "hh:mm a"); // Show time if today
+    } else if (isYesterday(date)) {
+      return "Yesterday"; // Show "Yesterday" if sent yesterday
+    } else {
+      return format(date, "dd/MM/yyyy"); // Show date for older messages
+    }
   };
 
   return (
@@ -37,7 +43,9 @@ const SingleChat = ({ navigation, chat, userId, otherUser }) => {
           <Text style={styles.mainChatItemTitle}>{otherUser?.firstname}</Text>
           <Text style={styles.mainChatItemSupport}>
             {chat.latestMessage
-              ? chat.latestMessage.message
+              ? chat.latestMessage.fileUrl
+                ? "[Attachment]"
+                : chat.latestMessage?.message
               : "No messages yet"}
           </Text>
         </View>
@@ -46,10 +54,7 @@ const SingleChat = ({ navigation, chat, userId, otherUser }) => {
         <View style={styles.rightSection}>
           {chat.latestMessage && (
             <Text style={styles.time}>
-              {new Date(chat.latestMessage.createdAt).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {formatTime(chat.latestMessage.createdAt)}
             </Text>
           )}
           {chat.unreadCount > 0 && (

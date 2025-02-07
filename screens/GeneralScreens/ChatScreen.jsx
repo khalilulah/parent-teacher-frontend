@@ -27,7 +27,11 @@ import {
 } from "../../redux/actions/chat/chatsApi";
 import { socket } from "../../utils/socket";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage, setMessages } from "../../redux/slices/chat/chatSlice";
+import {
+  addMessage,
+  setChatList,
+  setMessages,
+} from "../../redux/slices/chat/chatSlice";
 import * as DocumentPicker from "expo-document-picker";
 import { ActivityIndicator } from "react-native";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -64,7 +68,6 @@ const ChatScreen = ({ route, navigation }) => {
       .unwrap()
       .then((data) => {
         dispatch(setMessages({ chatId, messages: data.data }));
-        console.log("Setting message");
       });
   }, [chatId, dispatch]);
 
@@ -125,6 +128,8 @@ const ChatScreen = ({ route, navigation }) => {
 
   // Function to handle message send
   const handleSend = async (isFile = false) => {
+    socket.emit("get_users", userId);
+
     if (!isFile && !currentMessage.trim()) {
       return;
     }

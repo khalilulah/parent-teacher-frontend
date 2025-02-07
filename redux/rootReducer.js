@@ -6,6 +6,7 @@ import { authApi } from "./actions/auth/authApi";
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  chatList: chatReducer,
   chat: chatReducer,
   [authApi.reducerPath]: authApi.reducer,
   [chatsApi.reducerPath]: chatsApi.reducer,
