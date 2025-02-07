@@ -38,6 +38,7 @@ const Chats = ({ navigation }) => {
   useEffect(() => {
     // Listen for incoming users
     socket.on("send_users", (data) => {
+      console.log(data);
       setChatMessages(data);
     });
 

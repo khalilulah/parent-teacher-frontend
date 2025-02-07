@@ -1,8 +1,15 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, FONTS } from "../../constants/theme";
+import { format } from "date-fns";
 
 const SingleChat = ({ navigation, chat, userId, otherUser }) => {
+  const { lastMessage, unreadCount } = chat;
+
+  const formatTime = (time) => {
+    return format(new Date(time), "hh:mm a");
+  };
+
   return (
     <>
       <TouchableOpacity
@@ -28,25 +35,33 @@ const SingleChat = ({ navigation, chat, userId, otherUser }) => {
         {/* Name and chat */}
         <View style={styles.mainChatItem}>
           <Text style={styles.mainChatItemTitle}>{otherUser?.firstname}</Text>
-          <Text style={styles.mainChatItemSupport}>SingleChat</Text>
+          <Text style={styles.mainChatItemSupport}>
+            {chat.latestMessage
+              ? chat.latestMessage.message
+              : "No messages yet"}
+          </Text>
         </View>
 
         {/* RHS CONTAINER - (Date and Unread messages notification) */}
-        <View style={styles.rhsContainer}>
-          {/* Date */}
-          <Text style={styles.time}>Today</Text>
-
-          {/* Unread messages */}
-          <View style={styles.notificationItem}>
-            <Text style={styles.mainChatItemSupport}>SingleChat</Text>
-          </View>
+        <View style={styles.rightSection}>
+          {chat.latestMessage && (
+            <Text style={styles.time}>
+              {new Date(chat.latestMessage.createdAt).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Text>
+          )}
+          {chat.unreadCount > 0 && (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadText}>{chat.unreadCount}</Text>
+            </View>
+          )}
         </View>
       </TouchableOpacity>
     </>
   );
 };
-
-export default SingleChat;
 
 const styles = StyleSheet.create({
   container: {
@@ -101,4 +116,18 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     color: COLORS.primary,
   },
+  unreadBadge: {
+    backgroundColor: "red",
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginTop: 4,
+  },
+  unreadText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
 });
+
+export default SingleChat;
