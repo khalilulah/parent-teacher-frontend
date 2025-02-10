@@ -159,7 +159,7 @@ const ChatScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     // Join chat room
-    socket.emit("join_chat", chatId);
+    socket.emit("join_chat", { chatId, userId });
 
     return () => {
       // Leave the room when the screen is closed
@@ -254,17 +254,21 @@ const ChatScreen = ({ route, navigation }) => {
       </TopBarBackNavigation>
 
       {/* Chat List */}
-      {messages?.length > 0 && (
-        <FlatList
-          data={[...messages].reverse()} // Reverse messages so the newest appears at the bottom
-          ref={flatListRef}
-          style={{ padding: 8 }}
-          keyExtractor={(item, index) => index.toString()}
-          inverted // This makes FlatList scroll from bottom to top
-          renderItem={renderMessageItem}
-        />
-      )}
+      <View style={styles.chatListContainer}>
+        {messages.length > 0 ? (
+          <FlatList
+            data={[...messages].reverse()} // Reverse messages so the newest appears at the bottom
+            ref={flatListRef}
+            keyExtractor={(item, index) => index.toString()}
+            inverted
+            renderItem={renderMessageItem}
+          />
+        ) : (
+          <View style={styles.emptyChatPlaceholder} />
+        )}
+      </View>
 
+      {/* Message Input */}
       <View style={styles.inputContainer}>
         <TouchableOpacity
           style={styles.attachButton}
@@ -291,6 +295,8 @@ const ChatScreen = ({ route, navigation }) => {
           <Ionicons name="send" size={24} color="white" />
         </TouchableOpacity>
       </View>
+
+      {/* Image viewer */}
       <ImageViewerModal
         visible={imageViewerVisible}
         imageUrl={selectedImage}
@@ -309,6 +315,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f2f4f8",
+  },
+  chatListContainer: {
+    flex: 1, // This allows the list to take up all available space
+    padding: 8,
+  },
+  emptyChatPlaceholder: {
+    flex: 1, // Pushes the input field to the bottom when no messages exist
   },
   header: {
     padding: 16,
