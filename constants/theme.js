@@ -4,6 +4,10 @@ export const COLORS = {
   lightGray: "#CFD3D4",
   darkGray: "#555",
   offWhite: "#f5f5f5",
+  lightSuccess: "#E9FFDE",
+  success: "#009307",
+  lightError: "#FFDEDE",
+  error: "#930000",
 };
 
 export const FONTS = {

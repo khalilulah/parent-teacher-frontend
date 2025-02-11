@@ -260,6 +260,7 @@ const ChatScreen = ({ route, navigation }) => {
             data={[...messages].reverse()} // Reverse messages so the newest appears at the bottom
             ref={flatListRef}
             keyExtractor={(item, index) => index.toString()}
+            showsVerticalScrollIndicator={false}
             inverted
             renderItem={renderMessageItem}
           />

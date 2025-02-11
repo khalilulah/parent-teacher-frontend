@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 
 const GeneralScreenLayout = ({ navigation, children }) => {
   const loggedInUser = useSelector((state) => state.auth?.user);
-  const userId = loggedInUser?._id;
 
   useEffect(() => {
     // Set navigation bar styles
@@ -43,9 +42,7 @@ const GeneralScreenLayout = ({ navigation, children }) => {
       </View>
 
       {/* Main Body */}
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {children}
-      </ScrollView>
+      {children}
     </SafeAreaView>
   );
 };
@@ -90,5 +87,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 16,
+    flexGrow: 1,
   },
 });

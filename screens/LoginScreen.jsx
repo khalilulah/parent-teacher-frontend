@@ -67,8 +67,13 @@ const LoginScreen = ({ navigation }) => {
         navigation.replace("MainApp");
       }, 200);
     } catch (error) {
+      const errorMewssage = error?.data?.message;
+
       console.error("Error logging in", error);
-      ToastAndroid.show(`Error logging in ${error?.error}`, ToastAndroid.SHORT);
+      ToastAndroid.show(
+        `${errorMewssage || "Error logging in"}`,
+        ToastAndroid.SHORT
+      );
     }
   };
   return (

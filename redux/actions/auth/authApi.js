@@ -78,6 +78,10 @@ export const authApi = createApi({
         }
       },
     }),
+    fetchRequests: builder.query({
+      query: (guardianId) =>
+        `/requests?guardianId=${guardianId}&status=pending`,
+    }),
   }),
 });
 
@@ -86,4 +90,5 @@ export const {
   useSendOtpMutation,
   useRegisterGuardianMutation,
   useAddExistingGuardianMutation,
+  useFetchRequestsQuery,
 } = authApi;

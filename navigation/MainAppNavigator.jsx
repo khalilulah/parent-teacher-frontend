@@ -5,6 +5,7 @@ import { Chats, Profile } from "../screens/GeneralScreens";
 import { COLORS } from "../constants/theme";
 import { useSelector } from "react-redux";
 import { ManageGuardiansScreen } from "../screens/TeacherScreens";
+import { ManageRequests } from "../screens/GuardianScreens";
 
 const Tab = createBottomTabNavigator();
 
@@ -119,6 +120,24 @@ const MainAppNavigator = () => {
           }}
         />
       )} */}
+      {userRole === "guardian" && (
+        <Tab.Screen
+          name="Requests"
+          component={ManageRequests} // Replace with actual parent dashboard screen
+          options={{
+            tabBarIcon: ({ focused }) =>
+              focused ? (
+                <Ionicons name="person-add" size={24} color={COLORS.primary} />
+              ) : (
+                <Ionicons
+                  name="person-add-outline"
+                  size={24}
+                  color={COLORS.darkGray}
+                />
+              ),
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 };
