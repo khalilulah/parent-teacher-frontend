@@ -35,12 +35,18 @@ const SingleChat = ({ navigation, chat, userId, otherUser }) => {
           <Text style={styles.profileText}>
             {otherUser?.firstname[0]?.toUpperCase()}
             {otherUser?.surname[0]?.toUpperCase()}
+            {!otherUser?.firstname[0] && !otherUser?.surname[0] && "D"}
           </Text>
         </View>
 
         {/* Name and chat */}
         <View style={styles.mainChatItem}>
-          <Text style={styles.mainChatItemTitle}>{otherUser?.firstname}</Text>
+          <Text style={styles.mainChatItemTitle}>
+            {otherUser?.firstname}{" "}
+            {!otherUser?.firstname[0] &&
+              !otherUser?.surname[0] &&
+              "[Deleted User]"}
+          </Text>
           <Text style={styles.mainChatItemSupport}>
             {chat.latestMessage
               ? chat.latestMessage.fileUrl

@@ -20,7 +20,6 @@ const chatSlice = createSlice({
     },
     setChatList(state, action) {
       const { chatList } = action.payload;
-      console.log("chatlist", chatList);
       state.chatList = chatList;
     },
   },

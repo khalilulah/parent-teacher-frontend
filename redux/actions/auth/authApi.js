@@ -46,7 +46,44 @@ export const authApi = createApi({
         }
       },
     }),
+    registerGuardian: builder.mutation({
+      query: (credentials) => {
+        return {
+          url: "/auth/register/guardian",
+          method: "POST",
+          body: credentials,
+        };
+      },
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+        } catch (error) {
+          console.error("Error creating new guardian:", error);
+        }
+      },
+    }),
+    addExistingGuardian: builder.mutation({
+      query: (credentials) => {
+        return {
+          url: "/auth/guardian/sendRequest",
+          method: "POST",
+          body: credentials,
+        };
+      },
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          console.error("Error sending request:", error);
+        }
+      },
+    }),
   }),
 });
 
-export const { useLoginMutation, useSendOtpMutation } = authApi;
+export const {
+  useLoginMutation,
+  useSendOtpMutation,
+  useRegisterGuardianMutation,
+  useAddExistingGuardianMutation,
+} = authApi;

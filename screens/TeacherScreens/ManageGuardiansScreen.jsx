@@ -12,14 +12,29 @@ import {
 import { useDispatch } from "react-redux";
 import { COLORS } from "../../constants/theme";
 import { Button, GeneralScreenLayout, Input } from "../../components";
+import {
+  useAddExistingGuardianMutation,
+  useLoginMutation,
+  useRegisterGuardianMutation,
+} from "../../redux/actions/auth/authApi";
 
 const ManageGuardiansScreen = () => {
+  const [registerGuardian, { isLoading, error }] =
+    useRegisterGuardianMutation();
+  const [
+    addExistingGuardian,
+    {
+      isLoading: isAddExistingGuardianLoading,
+      error: addExistingGuardianError,
+    },
+  ] = useAddExistingGuardianMutation();
+
   const [activeTab, setActiveTab] = useState("new");
   const [formData, setFormData] = useState({
-    firstName: "",
+    firstname: "",
     surname: "",
     email: "",
-    username: "",
+    guardianUsername: "",
   });
 
   const dispatch = useDispatch();
@@ -28,26 +43,70 @@ const ManageGuardiansScreen = () => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleRegister = () => {
-    if (!formData.firstName || !formData.surname || !formData.email) {
-      ToastAndroid.show("Error: All fields are required.", ToastAndroid.SHORT);
-      return;
+  const handleRegister = async () => {
+    try {
+      if (!formData.firstname || !formData.surname || !formData.email) {
+        ToastAndroid.show(
+          "Error: All fields are required.",
+          ToastAndroid.SHORT
+        );
+        return;
+      }
+      const res = await registerGuardian(formData).unwrap();
+
+      const successMewssage = res?.message;
+      ToastAndroid.show(
+        `${successMewssage || "Success: Guardian registered successfully."}`,
+        ToastAndroid.SHORT
+      );
+
+      //   Reset form
+      setFormData({
+        firstname: "",
+        surname: "",
+        email: "",
+        guardianUsername: formData?.guardianUsername,
+      });
+    } catch (error) {
+      console.error(error);
+      const errorMewssage = error?.data?.message;
+      ToastAndroid.show(
+        `${errorMewssage || "An error occured. Please try again"}`,
+        ToastAndroid.SHORT
+      );
     }
-    dispatch(registerGuardian(formData))
-      .then(() =>
-        ToastAndroid.show("Success: Guardian registered successfully.")
-      )
-      .catch(() => ToastAndroid.show("Error: Failed to register guardian."));
   };
 
-  const handleAddExisting = () => {
-    if (!formData.username) {
-      ToastAndroid.show("Error: Username is required.");
-      return;
+  const handleAddExisting = async () => {
+    try {
+      if (!formData.guardianUsername) {
+        ToastAndroid.show("Error: Username is required.", ToastAndroid.SHORT);
+        return;
+      }
+
+      const res = await addExistingGuardian(formData).unwrap();
+
+      const successMewssage = res?.message;
+      ToastAndroid.show(
+        `${successMewssage || "Success: Guardian registered successfully."}`,
+        ToastAndroid.SHORT
+      );
+
+      //   Reset form
+      setFormData({
+        firstname: formData?.firstname,
+        surname: formData?.surname,
+        email: formData?.email,
+        guardianUsername: "",
+      });
+    } catch (error) {
+      console.error(error);
+      const errorMewssage = error?.data?.message;
+      ToastAndroid.show(
+        `${errorMewssage || "An error occured. Please try again"}`,
+        ToastAndroid.SHORT
+      );
     }
-    dispatch(addExistingGuardian(formData.username))
-      .then(() => ToastAndroid.show("Success: Guardian added successfully."))
-      .catch(() => ToastAndroid.show("Error: Failed to add guardian."));
   };
 
   return (
@@ -103,11 +162,10 @@ const ManageGuardiansScreen = () => {
             <View style={{ gap: 8 }}>
               <Input
                 label="First Name"
-                value={formData.firstName}
-                onChangeText={(text) => handleChange("firstName", text)}
+                value={formData.firstname}
+                onChangeText={(text) => handleChange("firstname", text)}
                 placeholder="Enter first name"
               />
-
               <Input
                 label="Surname"
                 value={formData.surname}
@@ -124,7 +182,9 @@ const ManageGuardiansScreen = () => {
               />
             </View>
 
-            <Button onPress={handleRegister}>Register Guardian</Button>
+            <Button onPress={handleRegister} disabled={isLoading}>
+              {isLoading ? "Please wait ..." : "Register Guardian"}
+            </Button>
           </View>
         )}
 
@@ -133,12 +193,19 @@ const ManageGuardiansScreen = () => {
           <View style={{ gap: 40 }}>
             <Input
               label="Guardian Username"
-              value={formData.username}
-              onChangeText={(text) => handleChange("username", text)}
+              value={formData.guardianUsername}
+              onChangeText={(text) => handleChange("guardianUsername", text)}
               placeholder="Enter username"
             />
 
-            <Button onPress={handleAddExisting}>Add Guardian</Button>
+            <Button
+              onPress={handleAddExisting}
+              disabled={isAddExistingGuardianLoading}
+            >
+              {isAddExistingGuardianLoading
+                ? "Please wait ..."
+                : "Add Guardian"}
+            </Button>
           </View>
         )}
       </ScrollView>
