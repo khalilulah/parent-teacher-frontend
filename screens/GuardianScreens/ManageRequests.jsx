@@ -26,13 +26,6 @@ import { socket } from "../../utils/socket";
 
 const ManageRequests = () => {
   const dispatch = useDispatch();
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(resetUnreadRequests()); // Clear badge when screen is focused
-    }, [dispatch])
-  );
-
   const loggedInUser = useSelector((state) => state.auth?.user);
   const guardianId = loggedInUser?._id;
 
@@ -99,6 +92,12 @@ const ManageRequests = () => {
       );
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(resetUnreadRequests()); // Clear badge when screen is focused
+    }, [dispatch])
+  );
 
   if (error) {
     return (

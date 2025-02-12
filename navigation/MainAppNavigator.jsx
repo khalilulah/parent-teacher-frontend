@@ -13,6 +13,10 @@ const Tab = createBottomTabNavigator();
 
 const MainAppNavigator = () => {
   const dispatch = useDispatch();
+  const loggedInUser = useSelector((state) => state.auth?.user);
+  const userRole = loggedInUser?.role;
+  const requestCount =
+    useSelector((state) => state.requests.unreadRequests) || null;
 
   useEffect(() => {
     // Listen for new request notifications
@@ -24,9 +28,6 @@ const MainAppNavigator = () => {
       socket.off("new_request");
     };
   }, [dispatch]);
-
-  const loggedInUser = useSelector((state) => state.auth?.user);
-  const userRole = loggedInUser?.role;
 
   return (
     <Tab.Navigator
@@ -131,8 +132,7 @@ const MainAppNavigator = () => {
                   color={COLORS.darkGray}
                 />
               ),
-            tabBarBadge:
-              useSelector((state) => state.requests.unreadRequests) || null,
+            tabBarBadge: requestCount,
             tabBarBadgeStyle: {
               color: "white",
               fontSize: 10,
