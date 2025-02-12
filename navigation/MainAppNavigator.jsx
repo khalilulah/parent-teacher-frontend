@@ -1,15 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, FontAwesome } from "@expo/vector-icons"; // Optional for icons
 import { Chats, Profile } from "../screens/GeneralScreens";
 import { COLORS } from "../constants/theme";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ManageGuardiansScreen } from "../screens/TeacherScreens";
 import { ManageRequests } from "../screens/GuardianScreens";
+import { incrementUnreadRequests } from "../redux/slices/guardian/requestSlice";
+import { socket } from "../utils/socket";
 
 const Tab = createBottomTabNavigator();
 
 const MainAppNavigator = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Listen for new request notifications
+    socket.on("new_request", () => {
+      dispatch(incrementUnreadRequests());
+    });
+
+    return () => {
+      socket.off("new_request");
+    };
+  }, [dispatch]);
+
   const loggedInUser = useSelector((state) => state.auth?.user);
   const userRole = loggedInUser?.role;
 
@@ -100,26 +115,7 @@ const MainAppNavigator = () => {
           />
         </>
       )}
-
-      {/* Conditional Tabs for Parents/Guardians */}
-      {/* {userRole === "guardian" && (
-        <Tab.Screen
-          name="Parent Dashboard"
-          component={ParentScreen} // Replace with actual parent dashboard screen
-          options={{
-            tabBarIcon: ({ focused }) =>
-              focused ? (
-                <Ionicons name="home-sharp" size={24} color={COLORS.primary} />
-              ) : (
-                <Ionicons
-                  name="home-outline"
-                  size={24}
-                  color={COLORS.darkGray}
-                />
-              ),
-          }}
-        />
-      )} */}
+      {/* Conditional tabs */}
       {userRole === "guardian" && (
         <Tab.Screen
           name="Requests"
@@ -135,6 +131,18 @@ const MainAppNavigator = () => {
                   color={COLORS.darkGray}
                 />
               ),
+            tabBarBadge:
+              useSelector((state) => state.requests.unreadRequests) || null,
+            tabBarBadgeStyle: {
+              color: "white",
+              fontSize: 10,
+              fontWeight: "500",
+              fontFamily: "Suse-Bold",
+              backgroundColor: COLORS.error,
+              left: 22,
+              width: 18,
+              height: 18,
+            },
           }}
         />
       )}

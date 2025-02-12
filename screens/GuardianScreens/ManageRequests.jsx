@@ -11,9 +11,18 @@ import { COLORS } from "../../constants/theme";
 import { EmptyStateLayout, GeneralScreenLayout } from "../../components";
 import { useFocusEffect } from "@react-navigation/native";
 import { useFetchRequestsQuery } from "../../redux/actions/auth/authApi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { resetUnreadRequests } from "../../redux/slices/guardian/requestSlice";
 
 const ManageRequests = () => {
+  const dispatch = useDispatch();
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(resetUnreadRequests()); // Clear badge when screen is focused
+    }, [dispatch])
+  );
+
   const loggedInUser = useSelector((state) => state.auth?.user);
   const guardianId = loggedInUser?._id;
 
@@ -44,7 +53,11 @@ const ManageRequests = () => {
   };
 
   if (isLoading) {
-    return <ActivityIndicator size="large" color={COLORS.primary} />;
+    return (
+      <GeneralScreenLayout>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </GeneralScreenLayout>
+    );
   }
 
   return (
