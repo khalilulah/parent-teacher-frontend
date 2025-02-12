@@ -4,15 +4,25 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { COLORS } from "../../constants/theme";
-import { EmptyStateLayout, GeneralScreenLayout } from "../../components";
+import {
+  ConfirmationModal,
+  EmptyStateLayout,
+  GeneralScreenLayout,
+} from "../../components";
 import { useFocusEffect } from "@react-navigation/native";
 import { useFetchRequestsQuery } from "../../redux/actions/auth/authApi";
 import { useDispatch, useSelector } from "react-redux";
 import { resetUnreadRequests } from "../../redux/slices/guardian/requestSlice";
+import {
+  useAcceptRequestMutation,
+  useRejectRequestMutation,
+} from "../../redux/actions/request/requestApi";
+import { socket } from "../../utils/socket";
 
 const ManageRequests = () => {
   const dispatch = useDispatch();
@@ -26,12 +36,69 @@ const ManageRequests = () => {
   const loggedInUser = useSelector((state) => state.auth?.user);
   const guardianId = loggedInUser?._id;
 
-  // Directly use RTK Query's hook to fetch data
+  // For fetching requests
   const {
     data: requests,
     error,
     isLoading,
+    refetch,
   } = useFetchRequestsQuery(guardianId);
+
+  // For accepting a request
+  const [acceptRequest] = useAcceptRequestMutation();
+
+  // For rejecting a request
+  const [rejectRequest] = useRejectRequestMutation();
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedAction, setSelectedAction] = useState(null);
+
+  const openConfirmationModal = (requestId, action) => {
+    setSelectedRequest(requestId);
+    setSelectedAction(action);
+    setModalVisible(true);
+  };
+
+  socket.on("new_request", () => {
+    refetch();
+  });
+
+  const confirmAction = async () => {
+    setModalVisible(false); // Close modal
+    try {
+      if (selectedAction === "accept") {
+        const res = await acceptRequest({
+          requestId: selectedRequest,
+        }).unwrap();
+        const successMessage = res?.message;
+        ToastAndroid.show(
+          `${successMessage || "Success: Request successfully accepted"}`,
+          ToastAndroid.SHORT
+        );
+      } else {
+        const res = await rejectRequest({
+          requestId: selectedRequest,
+        }).unwrap();
+        const successMessage = res?.message;
+        ToastAndroid.show(
+          `${successMessage || "Success: Request successfully rejected"}`,
+          ToastAndroid.SHORT
+        );
+      }
+
+      refetch(); // Refresh the request list
+      dispatch(resetUnreadRequests()); // Clear badge when screen is focused
+      socket.emit("get_users", guardianId);
+    } catch (error) {
+      console.error(`Error ${selectedAction} request`, error);
+      const errorMewssage = error?.data?.message;
+      ToastAndroid.show(
+        `${errorMewssage || "An error occured. Please try again"}`,
+        ToastAndroid.SHORT
+      );
+    }
+  };
 
   if (error) {
     return (
@@ -43,15 +110,6 @@ const ManageRequests = () => {
     );
   }
 
-  const handleAction = async (requestId, action) => {
-    try {
-      await axios.post(`/api/${action}-request`, { requestId, guardianId });
-      setRequests(requests.filter((req) => req._id !== requestId));
-    } catch (error) {
-      console.error(`Error ${action} request`, error);
-    }
-  };
-
   if (isLoading) {
     return (
       <GeneralScreenLayout>
@@ -62,6 +120,12 @@ const ManageRequests = () => {
 
   return (
     <GeneralScreenLayout>
+      <ConfirmationModal
+        visible={modalVisible}
+        message={`Are you sure you want to ${selectedAction} this request?`}
+        onConfirm={confirmAction}
+        onCancel={() => setModalVisible(false)}
+      />
       {requests?.data?.length > 0 ? (
         <FlatList
           contentContainerStyle={styles.scrollContainer}
@@ -93,7 +157,7 @@ const ManageRequests = () => {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => handleAction(item._id, "accept")}
+                  onPress={() => openConfirmationModal(item._id, "accept")}
                   style={styles.acceptButton}
                 >
                   <Text
@@ -106,7 +170,7 @@ const ManageRequests = () => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => handleAction(item._id, "reject")}
+                  onPress={() => openConfirmationModal(item._id, "reject")}
                   style={styles.rejectButton}
                 >
                   <Text

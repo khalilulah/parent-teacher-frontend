@@ -53,7 +53,6 @@ const ManageGuardiansScreen = () => {
         return;
       }
       const res = await registerGuardian(formData).unwrap();
-
       const successMewssage = res?.message;
       ToastAndroid.show(
         `${successMewssage || "Success: Guardian registered successfully."}`,
