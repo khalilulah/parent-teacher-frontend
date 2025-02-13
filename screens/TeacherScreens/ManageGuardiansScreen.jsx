@@ -113,6 +113,7 @@ const ManageGuardiansScreen = () => {
       <ScrollView
         contentContainerStyle={{
           paddingBottom: 40, // Ensure space at bottom
+          paddingHorizontal: 20,
         }}
         style={{ width: "100%" }}
         showsVerticalScrollIndicator={false}
@@ -217,6 +218,7 @@ const styles = {
     flexDirection: "row",
     marginBottom: 20,
     gap: 8,
+    marginTop: 20,
   },
   tabButton: {
     flex: 1,

@@ -130,14 +130,22 @@ const styles = StyleSheet.create({
   unreadBadge: {
     backgroundColor: "red",
     borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    // paddingHorizontal: 8,
+    width: 30,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+
+    // paddingVertical: 2,
     marginTop: 4,
   },
   unreadText: {
     color: "white",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  rightSection: {
+    alignItems: "flex-end",
   },
 });
 

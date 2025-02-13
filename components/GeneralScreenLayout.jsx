@@ -1,11 +1,32 @@
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useMemo } from "react";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as NavigationBar from "expo-navigation-bar";
 import { useSelector } from "react-redux";
+import ConfirmationModal from "./ConfirmationModal";
 
 const GeneralScreenLayout = ({ navigation, children }) => {
+  // Modal visibility state
+  const [modalVisible, setModalVisible] = useState(false);
+
   const loggedInUser = useSelector((state) => state.auth?.user);
+
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  // Logout function
+  const handleLogout = () => {
+    dispatch(logout());
+    navigation.replace("Login");
+  };
+  // End of logout function
 
   useEffect(() => {
     // Set navigation bar styles
@@ -26,24 +47,57 @@ const GeneralScreenLayout = ({ navigation, children }) => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.topBar}>
-        <Image
-          style={styles.loginImage}
-          source={require("../assets/icons/logoMini.png")}
+    <TouchableWithoutFeedback onPress={() => setDropdownVisible(false)}>
+      <SafeAreaView style={styles.container}>
+        {/* Logout confirmation modal */}
+        <ConfirmationModal
+          visible={modalVisible}
+          message={`Are you sure you want to logout?`}
+          onConfirm={handleLogout}
+          onCancel={() => {
+            setModalVisible(false);
+            setDropdownVisible(false);
+          }}
         />
-        <View>
-          <Text style={styles.roleText}>{parseText(loggedInUser?.role)}</Text>
-          <Text style={styles.nameText}>
-            {loggedInUser?.firstname} {loggedInUser?.surname}
-          </Text>
-        </View>
-      </View>
 
-      {/* Main Body */}
-      {children}
-    </SafeAreaView>
+        {/* Header */}
+        <View style={styles.topBar}>
+          <Image
+            style={styles.loginImage}
+            source={require("../assets/icons/logoMini.png")}
+          />
+
+          {/* User details */}
+          <TouchableOpacity
+            onPress={() => setDropdownVisible(!dropdownVisible)}
+          >
+            <View>
+              <Text style={styles.roleText}>
+                {parseText(loggedInUser?.role)}
+              </Text>
+              <Text style={styles.nameText}>
+                {loggedInUser?.firstname} {loggedInUser?.surname}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Dropdown */}
+        {dropdownVisible && (
+          <View style={styles.dropdownMenu}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              style={styles.dropdownItem}
+            >
+              <Text style={styles.dropdownText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Main Body */}
+        {children}
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -89,4 +143,20 @@ const styles = StyleSheet.create({
     padding: 16,
     flexGrow: 1,
   },
+  dropdownMenu: {
+    position: "absolute",
+    top: 80,
+    right: 16,
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 2,
+  },
+  dropdownItem: { paddingVertical: 5, paddingHorizontal: 15, width: 120 },
+  dropdownText: { fontSize: 14, fontWeight: "500", fontFamily: "Suse-Bold" },
 });

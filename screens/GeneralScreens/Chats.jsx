@@ -73,6 +73,7 @@ const Chats = ({ navigation }) => {
 
   socket.on("send_users", (data) => dispatch(setChatList({ chatList: data })));
 
+  console.log("Heyy");
   // Memoized function to avoid unnecessary re-renders
   const parseText = useMemo(() => {
     return (text) => {
@@ -120,6 +121,7 @@ const Chats = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+        {/* Dropdown */}
         {dropdownVisible && (
           <View style={styles.dropdownMenu}>
             <TouchableOpacity
