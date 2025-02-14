@@ -153,9 +153,11 @@ const Chats = ({ navigation }) => {
           });
 
           // Push to the array
-          selectedUserChatIds?.push(foundChat.chatId);
+          selectedUserChatIds?.push({
+            chatId: foundChat.chatId,
+            userId: currentUserId,
+          });
         }
-
         messageData.recipientIds = selectedUsers;
         messageData.chatIds = selectedUserChatIds;
 

@@ -17,6 +17,7 @@ import {
   useLoginMutation,
   useRegisterGuardianMutation,
 } from "../../redux/actions/auth/authApi";
+import { RadioButton } from "react-native-paper";
 
 const ManageGuardiansScreen = () => {
   const [registerGuardian, { isLoading, error }] =
@@ -31,6 +32,7 @@ const ManageGuardiansScreen = () => {
 
   const [activeTab, setActiveTab] = useState("new");
   const [formData, setFormData] = useState({
+    title: null, // Default title
     firstname: "",
     surname: "",
     email: "",
@@ -45,7 +47,12 @@ const ManageGuardiansScreen = () => {
 
   const handleRegister = async () => {
     try {
-      if (!formData.firstname || !formData.surname || !formData.email) {
+      if (
+        !formData.firstname ||
+        !formData.surname ||
+        !formData.email ||
+        !formData.title
+      ) {
         ToastAndroid.show(
           "Error: All fields are required.",
           ToastAndroid.SHORT
@@ -61,6 +68,7 @@ const ManageGuardiansScreen = () => {
 
       //   Reset form
       setFormData({
+        title: null,
         firstname: "",
         surname: "",
         email: "",
@@ -159,7 +167,30 @@ const ManageGuardiansScreen = () => {
         {/* New Guardian Form */}
         {activeTab === "new" && (
           <View style={{ gap: 40 }}>
-            <View style={{ gap: 8 }}>
+            <View style={{ gap: 8, marginTop: 20 }}>
+              {/* Title Selection (Radio Buttons) */}
+              <View>
+                <Text style={styles.label}>Title</Text>
+                <RadioButton.Group
+                  onValueChange={(value) => handleChange("title", value)}
+                  value={formData.title}
+                >
+                  <View style={styles.radioContainer}>
+                    <View style={styles.radioOption}>
+                      <RadioButton value="Miss" color={COLORS?.primary} />
+                      <Text>Miss</Text>
+                    </View>
+                    <View style={styles.radioOption}>
+                      <RadioButton value="Mr" color={COLORS?.primary} />
+                      <Text>Mr</Text>
+                    </View>
+                    <View style={styles.radioOption}>
+                      <RadioButton value="Mrs" color={COLORS?.primary} />
+                      <Text>Mrs</Text>
+                    </View>
+                  </View>
+                </RadioButton.Group>
+              </View>
               <Input
                 label="First Name"
                 value={formData.firstname}
@@ -237,6 +268,22 @@ const styles = {
   },
   activeTabText: {
     color: "white",
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 400,
+    color: COLORS.black,
+    fontFamily: "Suse-Medium",
+  },
+  radioContainer: {
+    flexDirection: "row",
+    gap: 15,
+    alignItems: "center",
+  },
+  radioOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
   },
 };
 
