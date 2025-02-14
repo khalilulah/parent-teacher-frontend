@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   contained: { backgroundColor: COLORS.primary },
   outlined: {
     borderWidth: 1.5,
-    borderColor: "#6200ea",
+    borderColor: COLORS.primary,
     backgroundColor: "transparent",
   },
   text: { backgroundColor: "transparent" },
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     fontFamily: "Suse-Bold",
     fontWeight: 600,
   },
-  textOutlined: { color: "#6200ea" },
+  textOutlined: { color: COLORS.primary },
   disabled: { opacity: 0.5 },
   content: { flexDirection: "row", alignItems: "center" },
   icon: { marginHorizontal: 5 },
