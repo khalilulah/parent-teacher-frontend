@@ -18,7 +18,11 @@ export const chatsApi = createApi({
     fetchUsers: builder.query({
       query: () => `/messages/list/users`,
     }),
+    fetchGroups: builder.query({
+      query: () => `/messages/list/groups`,
+    }),
   }),
 });
 
-export const { useFetchChatsQuery, useFetchUsersQuery } = chatsApi;
+export const { useFetchChatsQuery, useFetchUsersQuery, useFetchGroupsQuery } =
+  chatsApi;

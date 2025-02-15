@@ -4,7 +4,7 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons"; // Optional for icon
 import { Chats, Profile } from "../screens/GeneralScreens";
 import { COLORS } from "../constants/theme";
 import { useDispatch, useSelector } from "react-redux";
-import { ManageGuardiansScreen } from "../screens/TeacherScreens";
+import { ManageGroups, ManageGuardiansScreen } from "../screens/TeacherScreens";
 import { ManageRequests } from "../screens/GuardianScreens";
 import { incrementUnreadRequests } from "../redux/slices/guardian/requestSlice";
 import { socket } from "../utils/socket";
@@ -96,7 +96,7 @@ const MainAppNavigator = () => {
           />
           <Tab.Screen
             name="Manage Groups"
-            component={Chats} // Replace with actual group management screen
+            component={ManageGroups} // Replace with actual group management screen
             options={{
               tabBarIcon: ({ focused }) =>
                 focused ? (
@@ -116,6 +116,7 @@ const MainAppNavigator = () => {
           />
         </>
       )}
+
       {/* Conditional tabs */}
       {userRole === "guardian" && (
         <Tab.Screen
