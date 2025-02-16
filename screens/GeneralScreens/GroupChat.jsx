@@ -4,7 +4,6 @@ import { COLORS, FONTS } from "../../constants/theme";
 import { format, isToday, isYesterday } from "date-fns";
 
 const GroupChat = ({ navigation, chat }) => {
-  console.log(chat);
   return (
     <>
       <TouchableOpacity

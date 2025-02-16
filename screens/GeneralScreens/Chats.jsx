@@ -25,6 +25,7 @@ import { logout } from "../../redux/slices/auth/authSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { useFetchUsersQuery } from "../../redux/actions/chat/chatsApi";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import GroupChat from "./GroupChat";
 
 const Chats = ({ navigation }) => {
   const [broadcastModalVisible, setBroadcastModalVisible] = useState(false);
@@ -205,7 +206,11 @@ const Chats = ({ navigation }) => {
       }
     }, [userId, dispatch])
   );
-
+  useFocusEffect(
+    useCallback(() => {
+      console.log("Should fetch data 2");
+    }, [])
+  );
   socket.on("send_users", (data) => dispatch(setChatList({ chatList: data })));
 
   // Memoized function to avoid unnecessary re-renders
@@ -278,17 +283,21 @@ const Chats = ({ navigation }) => {
         {/* Main Body */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {cm.length > 0 ? (
-            cm.map((chat, index) => (
-              <SingleChat
-                key={chat._id || index}
-                chat={chat}
-                navigation={navigation}
-                userId={userId}
-                otherUser={chat?.participants?.find(
-                  (participant) => participant?._id !== userId
-                )}
-              />
-            ))
+            cm.map((chat, index) =>
+              chat?.type === "private" ? (
+                <SingleChat
+                  key={chat._id || index}
+                  chat={chat}
+                  navigation={navigation}
+                  userId={userId}
+                  otherUser={chat?.participants?.find(
+                    (participant) => participant?._id !== userId
+                  )}
+                />
+              ) : (
+                <GroupChat chat={chat} />
+              )
+            )
           ) : (
             <View style={styles.emptyViewContainer}>
               <EmptyStateLayout

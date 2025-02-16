@@ -21,8 +21,28 @@ export const chatsApi = createApi({
     fetchGroups: builder.query({
       query: () => `/messages/list/groups`,
     }),
+    createGroup: builder.mutation({
+      query: (credentials) => {
+        return {
+          url: "/messages/createGroup",
+          method: "POST",
+          body: credentials,
+        };
+      },
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+        } catch (error) {
+          console.error("Error creating new guardian:", error);
+        }
+      },
+    }),
   }),
 });
 
-export const { useFetchChatsQuery, useFetchUsersQuery, useFetchGroupsQuery } =
-  chatsApi;
+export const {
+  useFetchChatsQuery,
+  useFetchUsersQuery,
+  useFetchGroupsQuery,
+  useCreateGroupMutation,
+} = chatsApi;

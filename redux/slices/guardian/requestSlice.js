@@ -13,9 +13,7 @@ const requestSlice = createSlice({
       state.unreadRequests += 1;
     },
     resetUnreadRequests: (state) => {
-      console.log(state.unreadRequests);
       state.unreadRequests = 0;
-      console.log(state.unreadRequests);
     },
   },
 });
