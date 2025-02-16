@@ -59,13 +59,19 @@ const LoginScreen = ({ navigation }) => {
         return;
       }
 
-      await login({ email, password }).unwrap();
-      ToastAndroid.show("Login successful", ToastAndroid.SHORT);
+      const loginResponse = await login({ email, password }).unwrap();
+      console.log(loginResponse);
 
-      setTimeout(() => {
-        //   Navigate home
-        navigation.replace("MainApp");
-      }, 200);
+      if (loginResponse?.data?.action === "changeDefaultPassword") {
+        navigation.navigate("ChangeDefaultPassword");
+      } else {
+        ToastAndroid.show("Login successful", ToastAndroid.SHORT);
+
+        setTimeout(() => {
+          //   Navigate home
+          navigation.replace("MainApp");
+        }, 200);
+      }
     } catch (error) {
       const errorMewssage = error?.data?.message;
 

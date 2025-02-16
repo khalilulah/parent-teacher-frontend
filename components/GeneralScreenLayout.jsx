@@ -10,10 +10,14 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as NavigationBar from "expo-navigation-bar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ConfirmationModal from "./ConfirmationModal";
+import { logout } from "../redux/slices/auth/authSlice";
 
 const GeneralScreenLayout = ({ navigation, children }) => {
+  // Action dispatcher
+  const dispatch = useDispatch();
+
   // Modal visibility state
   const [modalVisible, setModalVisible] = useState(false);
 

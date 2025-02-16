@@ -1,15 +1,29 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS, FONTS } from "../../constants/theme";
+import { format, isToday, isYesterday } from "date-fns";
 
-const GroupChat = ({ navigation, chat, currentUserId }) => {
+const ChatsGroupChat = ({ navigation, chat, userId }) => {
+  const formatTime = (time) => {
+    const date = new Date(time);
+
+    if (isToday(date)) {
+      return format(date, "hh:mm a"); // Show time if today
+    } else if (isYesterday(date)) {
+      return "Yesterday"; // Show "Yesterday" if sent yesterday
+    } else {
+      return format(date, "dd/MM/yyyy"); // Show date for older messages
+    }
+  };
+
   return (
     <>
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate("GroupDetails", {
-            chat,
-            currentUserId,
+          navigation.navigate("ChatScreen", {
+            chatId: chat?.chatId,
+            name: chat?.name,
+            userId,
           })
         }
         style={styles.container}
@@ -30,6 +44,20 @@ const GroupChat = ({ navigation, chat, currentUserId }) => {
           <Text style={styles.mainChatItemSupport}>
             {`${chat?.participants?.length} Participants`}
           </Text>
+        </View>
+
+        {/* RHS CONTAINER - (Date and Unread messages notification) */}
+        <View style={styles.rightSection}>
+          {chat.latestMessage && (
+            <Text style={styles.time}>
+              {formatTime(chat.latestMessage.createdAt)}
+            </Text>
+          )}
+          {chat.unreadCount > 0 && (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadText}>{chat.unreadCount}</Text>
+            </View>
+          )}
         </View>
       </TouchableOpacity>
     </>
@@ -111,4 +139,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GroupChat;
+export default ChatsGroupChat;

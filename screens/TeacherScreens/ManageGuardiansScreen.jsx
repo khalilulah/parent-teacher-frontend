@@ -19,7 +19,7 @@ import {
 } from "../../redux/actions/auth/authApi";
 import { RadioButton } from "react-native-paper";
 
-const ManageGuardiansScreen = () => {
+const ManageGuardiansScreen = ({ navigation }) => {
   const [registerGuardian, { isLoading, error }] =
     useRegisterGuardianMutation();
   const [
@@ -117,7 +117,7 @@ const ManageGuardiansScreen = () => {
   };
 
   return (
-    <GeneralScreenLayout>
+    <GeneralScreenLayout navigation={navigation}>
       <ScrollView
         contentContainerStyle={{
           paddingBottom: 40, // Ensure space at bottom

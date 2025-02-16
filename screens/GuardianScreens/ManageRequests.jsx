@@ -24,7 +24,7 @@ import {
 } from "../../redux/actions/request/requestApi";
 import { socket } from "../../utils/socket";
 
-const ManageRequests = () => {
+const ManageRequests = ({ navigation }) => {
   const dispatch = useDispatch();
   const loggedInUser = useSelector((state) => state.auth?.user);
   const guardianId = loggedInUser?._id;
@@ -118,7 +118,7 @@ const ManageRequests = () => {
   }
 
   return (
-    <GeneralScreenLayout>
+    <GeneralScreenLayout navigation={navigation}>
       <ConfirmationModal
         visible={modalVisible}
         message={`Are you sure you want to ${selectedAction} this request?`}

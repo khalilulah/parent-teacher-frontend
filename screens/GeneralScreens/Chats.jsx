@@ -26,6 +26,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFetchUsersQuery } from "../../redux/actions/chat/chatsApi";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import GroupChat from "./GroupChat";
+import ChatsGroupChat from "./ChatsGroupChat";
 
 const Chats = ({ navigation }) => {
   const [broadcastModalVisible, setBroadcastModalVisible] = useState(false);
@@ -287,7 +288,12 @@ const Chats = ({ navigation }) => {
                   )}
                 />
               ) : (
-                <GroupChat chat={chat} key={chat._id || index} />
+                <ChatsGroupChat
+                  userId={userId}
+                  navigation={navigation}
+                  chat={chat}
+                  key={chat._id || index}
+                />
               )
             )
           ) : (

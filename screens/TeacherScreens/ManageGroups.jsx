@@ -102,7 +102,7 @@ const ManageGroups = ({ navigation }) => {
   }
 
   return (
-    <GeneralScreenLayout>
+    <GeneralScreenLayout navigation={navigation}>
       {/* Group List */}
       {groups?.data?.length > 0 ? (
         <FlatList
