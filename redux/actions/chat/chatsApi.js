@@ -64,18 +64,12 @@ export const chatsApi = createApi({
     }),
     modifyGroupUsers: builder.mutation({
       query: (credentials) => {
+        console.log("Credentials", credentials);
         return {
-          url: "/messages/createGroup",
-          method: "POST",
+          url: "/messages/modifyGroupUsers",
+          method: "PUT",
           body: credentials,
         };
-      },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-        } catch (error) {
-          console.error("Error creating new guardian:", error);
-        }
       },
     }),
   }),

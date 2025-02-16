@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState } from "react";
 
 import {
@@ -28,7 +29,8 @@ import { COLORS } from "../../constants/theme";
 
 const GroupDetails = ({ navigation, route }) => {
   const { chat, currentUserId } = route.params; // Pass currentUserId from navigation
-  console.log(route.params);
+  const [participants, setParticipants] = useState(chat.participants);
+
   const [newGroupName, setNewGroupName] = useState(chat.name);
   const [renameGroup, { isLoading: isRenaming }] = useRenameGroupMutation();
   const [deleteGroup, { isLoading: isDeleting }] = useDeleteGroupMutation();
@@ -79,11 +81,14 @@ const GroupDetails = ({ navigation, route }) => {
     try {
       if (selectedAction === "remove") {
         await modifyGroupUsers({
-          groupId: chat._id,
+          chatId: chat?.chatId,
           userId: selectedUser,
           action: "remove",
         }).unwrap();
         ToastAndroid.show("User removed", ToastAndroid.SHORT);
+        setParticipants(
+          participants.filter((user) => user._id !== selectedUser)
+        );
       } else if (selectedAction === "delete") {
         await deleteGroup(chat._id).unwrap();
         ToastAndroid.show("Group deleted", ToastAndroid.SHORT);
@@ -93,14 +98,19 @@ const GroupDetails = ({ navigation, route }) => {
       ToastAndroid.show("Action failed", ToastAndroid.SHORT);
     }
   };
+
   const handleModifyUser = async (userId, action) => {
-    if (userId === currentUserId && action === "remove") {
-      ToastAndroid.show("You cannot remove yourself!", ToastAndroid.SHORT);
-      return;
-    }
     try {
-      await modifyGroupUsers({ groupId: chat._id, userId, action }).unwrap();
+      await modifyGroupUsers({
+        chatId: chat.chatId,
+        userId,
+        action,
+      }).unwrap();
       ToastAndroid.show(`User ${action}ed`, ToastAndroid.SHORT);
+      const addedUser = users.data.find((user) => user._id === userId);
+      if (addedUser) {
+        setParticipants([...participants, addedUser]);
+      }
     } catch (error) {
       ToastAndroid.show("Failed to modify user", ToastAndroid.SHORT);
     }
@@ -138,7 +148,7 @@ const GroupDetails = ({ navigation, route }) => {
         {/* Users List */}
         <Text style={styles.sectionTitle}>Group Members</Text>
         <FlatList
-          data={chat.participants}
+          data={participants}
           keyExtractor={(item) => item._id}
           scrollEnabled={false}
           renderItem={({ item }) => (
@@ -173,8 +183,7 @@ const GroupDetails = ({ navigation, route }) => {
           }}
         >
           <Text style={{ fontFamily: "Suse-SemiBold" }}>
-            Once you delete a repository, there is no going back. Please be
-            certain.
+            Once you delete a group, there is no going back. Please be certain.
           </Text>
           <Button
             variant="danger"
@@ -195,12 +204,13 @@ const GroupDetails = ({ navigation, route }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Users</Text>
+            <Text style={styles.modalTitle}>Add User</Text>
             <FlatList
               data={users?.data?.filter(
                 (user) => !chat.participants.some((p) => p._id === user._id)
               )}
               keyExtractor={(item) => item._id}
+              style={{ marginBottom: 20 }}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.addUserRow}
@@ -212,16 +222,11 @@ const GroupDetails = ({ navigation, route }) => {
                   <Text style={styles.userName}>
                     {item.firstname} {item.surname}
                   </Text>
-                  <Text style={styles.addText}>Add</Text>
+                  <AntDesign name="adduser" size={24} color="black" />
                 </TouchableOpacity>
               )}
             />
-            <Button
-              variant="secondary"
-              onPress={() => setShowAddUserModal(false)}
-            >
-              Cancel
-            </Button>
+            <Button onPress={() => setShowAddUserModal(false)}>Cancel</Button>
           </View>
         </View>
       </Modal>
@@ -300,8 +305,9 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 500,
     marginBottom: 10,
+    fontFamily: "Suse-Bold",
   },
   addUserRow: {
     flexDirection: "row",
