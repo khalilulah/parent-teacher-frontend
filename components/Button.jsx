@@ -23,6 +23,7 @@ const Button = ({
   // Styles for button variant
   const variantStyles = {
     contained: styles.contained,
+    danger: styles.danger,
     outlined: styles.outlined,
     text: styles.text,
   }[variant];
@@ -79,6 +80,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   contained: { backgroundColor: COLORS.primary },
+  danger: { backgroundColor: COLORS.error },
   outlined: {
     borderWidth: 1.5,
     borderColor: COLORS.primary,

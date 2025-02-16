@@ -23,6 +23,7 @@ import { ChatScreen } from "./screens/GeneralScreens";
 import { persistor, store } from "./redux/store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { GroupDetails } from "./screens/TeacherScreens";
 
 // Font configuration
 const FONT_CONFIG = {
@@ -90,6 +91,12 @@ const SCREEN_CONFIG = [
   {
     name: "ChatScreen",
     component: ChatScreen,
+    options: { headerShown: false },
+  },
+  // Groupchat Management screen
+  {
+    name: "GroupDetails",
+    component: GroupDetails,
     options: { headerShown: false },
   },
 ];

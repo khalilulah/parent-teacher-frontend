@@ -28,7 +28,7 @@ import {
 import { GroupChat } from "../GeneralScreens";
 import { socket } from "../../utils/socket";
 
-const ManageGroups = () => {
+const ManageGroups = ({ navigation }) => {
   const loggedInUser = useSelector((state) => state.auth?.user);
   const userId = loggedInUser?._id;
 
@@ -103,6 +103,7 @@ const ManageGroups = () => {
 
   return (
     <GeneralScreenLayout>
+      {console.log("userId", userId)}
       {/* Group List */}
       {groups?.data?.length > 0 ? (
         <FlatList
@@ -113,7 +114,13 @@ const ManageGroups = () => {
           )}
           data={groups?.data}
           keyExtractor={(item) => item._id}
-          renderItem={({ item }) => <GroupChat chat={item} />}
+          renderItem={({ item }) => (
+            <GroupChat
+              chat={item}
+              navigation={navigation}
+              currentUserId={userId}
+            />
+          )}
         />
       ) : (
         <View style={styles.emptyViewContainer}>

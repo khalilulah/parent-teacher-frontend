@@ -3,14 +3,14 @@ import React from "react";
 import { COLORS, FONTS } from "../../constants/theme";
 import { format, isToday, isYesterday } from "date-fns";
 
-const GroupChat = ({ navigation, chat }) => {
+const GroupChat = ({ navigation, chat, currentUserId }) => {
   return (
     <>
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate("ChatScreen", {
-            chatId: chat?.chatId,
-            userId,
+          navigation.navigate("GroupDetails", {
+            chat,
+            currentUserId,
           })
         }
         style={styles.container}

@@ -37,6 +37,54 @@ export const chatsApi = createApi({
         }
       },
     }),
+    renameGroup: builder.mutation({
+      query: (credentials) => {
+        return {
+          url: "/messages/createGroup",
+          method: "POST",
+          body: credentials,
+        };
+      },
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+        } catch (error) {
+          console.error("Error creating new guardian:", error);
+        }
+      },
+    }),
+    deleteGroup: builder.mutation({
+      query: (credentials) => {
+        return {
+          url: "/messages/createGroup",
+          method: "POST",
+          body: credentials,
+        };
+      },
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+        } catch (error) {
+          console.error("Error creating new guardian:", error);
+        }
+      },
+    }),
+    modifyGroupUsers: builder.mutation({
+      query: (credentials) => {
+        return {
+          url: "/messages/createGroup",
+          method: "POST",
+          body: credentials,
+        };
+      },
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+        } catch (error) {
+          console.error("Error creating new guardian:", error);
+        }
+      },
+    }),
   }),
 });
 
@@ -45,4 +93,7 @@ export const {
   useFetchUsersQuery,
   useFetchGroupsQuery,
   useCreateGroupMutation,
+  useRenameGroupMutation,
+  useDeleteGroupMutation,
+  useModifyGroupUsersMutation,
 } = chatsApi;

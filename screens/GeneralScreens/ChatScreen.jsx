@@ -331,7 +331,8 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "500",
+    fontFamily: "Suse-Bold",
   },
   chatContainer: {
     padding: 16,
