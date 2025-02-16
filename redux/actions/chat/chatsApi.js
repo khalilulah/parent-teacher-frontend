@@ -40,17 +40,10 @@ export const chatsApi = createApi({
     renameGroup: builder.mutation({
       query: (credentials) => {
         return {
-          url: "/messages/createGroup",
-          method: "POST",
+          url: "/messages/renameGroup",
+          method: "PUT",
           body: credentials,
         };
-      },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-        } catch (error) {
-          console.error("Error creating new guardian:", error);
-        }
       },
     }),
     deleteGroup: builder.mutation({

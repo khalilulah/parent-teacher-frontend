@@ -52,11 +52,15 @@ const GroupDetails = ({ navigation, route }) => {
   const handleRenameGroup = async () => {
     if (!newGroupName.trim()) return;
     try {
-      await renameGroup({ groupId: chat._id, newName: newGroupName }).unwrap();
+      await renameGroup({
+        chatId: chat.chatId,
+        newName: newGroupName,
+      }).unwrap();
       ToastAndroid.show("Group renamed!", ToastAndroid.SHORT);
       navigation.goBack();
     } catch (error) {
-      ToastAndroid.show("Failed to rename", ToastAndroid.SHORT);
+      const errorMessage = error?.data?.message || "Failed to rename group";
+      ToastAndroid.show(`${errorMessage}`, ToastAndroid.SHORT);
     }
   };
 
@@ -128,7 +132,7 @@ const GroupDetails = ({ navigation, route }) => {
           onChangeText={setNewGroupName}
         />
         <Button onPress={handleRenameGroup} disabled={isRenaming}>
-          {isRenaming ? "Renaming..." : "Rename"}
+          {isRenaming ? "Renaming..." : "Rename Group"}
         </Button>
 
         {/* Users List */}
