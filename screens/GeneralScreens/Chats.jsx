@@ -225,14 +225,6 @@ const Chats = ({ navigation }) => {
     };
   }, []);
 
-  // console.log(
-  //   cm?.map((c) => {
-  //     if (c?.type === "private") {
-  //       c?.participants?.find((participant) => {});
-  //     }
-  //   })
-  // );
-
   return (
     <TouchableWithoutFeedback onPress={() => setDropdownVisible(false)}>
       <SafeAreaView style={styles.container}>
@@ -295,7 +287,7 @@ const Chats = ({ navigation }) => {
                   )}
                 />
               ) : (
-                <GroupChat chat={chat} />
+                <GroupChat chat={chat} key={chat._id || index} />
               )
             )
           ) : (

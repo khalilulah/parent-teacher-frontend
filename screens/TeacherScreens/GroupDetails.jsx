@@ -90,7 +90,7 @@ const GroupDetails = ({ navigation, route }) => {
           participants.filter((user) => user._id !== selectedUser)
         );
       } else if (selectedAction === "delete") {
-        await deleteGroup(chat._id).unwrap();
+        await deleteGroup({ chatId: chat.chatId }).unwrap();
         ToastAndroid.show("Group deleted", ToastAndroid.SHORT);
         navigation.goBack();
       }
@@ -153,8 +153,6 @@ const GroupDetails = ({ navigation, route }) => {
           scrollEnabled={false}
           renderItem={({ item }) => (
             <View style={styles.userRow}>
-              {/* {console.log(item)}
-              {console.log(currentUserId)} */}
               <Text style={styles.userName}>
                 {item.firstname} {item.surname}
               </Text>

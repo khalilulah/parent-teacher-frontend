@@ -103,7 +103,6 @@ const ManageGroups = ({ navigation }) => {
 
   return (
     <GeneralScreenLayout>
-      {console.log("userId", userId)}
       {/* Group List */}
       {groups?.data?.length > 0 ? (
         <FlatList
