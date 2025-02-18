@@ -22,15 +22,30 @@ export const authApi = createApi({
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          const loginResponse = {
-            token: data?.data?.token,
-            user: data?.data,
-          };
-          dispatch(setCredentials(loginResponse)); // Save token and user in the store
+
+          if (data?.data?.action !== "changeDefaultPassword") {
+            const loginResponse = {
+              token: data?.data?.token,
+              user: data?.data,
+            };
+            dispatch(setCredentials(loginResponse)); // Save token and user in the store
+          } else {
+            const loginResponse = {
+              token: data?.data?.token,
+            };
+            dispatch(setCredentials(loginResponse)); // Save token and user in the store
+          }
         } catch (error) {
           console.error("Login failed:", error);
         }
       },
+    }),
+    changeDefaultPassword: builder.mutation({
+      query: (credentials) => ({
+        url: "/auth/changeDefaultPassword",
+        method: "POST",
+        body: credentials,
+      }),
     }),
     sendOtp: builder.mutation({
       query: (credentials) => ({
@@ -91,4 +106,5 @@ export const {
   useRegisterGuardianMutation,
   useAddExistingGuardianMutation,
   useFetchRequestsQuery,
+  useChangeDefaultPasswordMutation,
 } = authApi;

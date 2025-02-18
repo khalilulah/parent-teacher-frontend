@@ -60,7 +60,6 @@ const LoginScreen = ({ navigation }) => {
       }
 
       const loginResponse = await login({ email, password }).unwrap();
-      console.log(loginResponse);
 
       if (loginResponse?.data?.action === "changeDefaultPassword") {
         navigation.navigate("ChangeDefaultPassword");

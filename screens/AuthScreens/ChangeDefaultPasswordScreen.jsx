@@ -8,30 +8,48 @@ import {
   TopBarBackNavigation,
 } from "../../components";
 import { COLORS } from "../../constants/theme";
+import { useChangeDefaultPasswordMutation } from "../../redux/actions/auth/authApi";
 
 const ChangeDefaultPasswordScreen = ({ navigation }) => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [changeDefaultPassword, { isLoading }] =
+    useChangeDefaultPasswordMutation();
 
-  const handleChangePassword = () => {
-    if (!oldPassword || !newPassword || !confirmNewPassword) {
-      ToastAndroid.show("Please fill in all fields", ToastAndroid.SHORT);
-      return;
-    }
-    if (newPassword !== confirmNewPassword) {
-      ToastAndroid.show("Passwords do not match", ToastAndroid.SHORT);
-      return;
-    }
+  const handleChangePassword = async () => {
+    try {
+      if (!oldPassword || !newPassword || !confirmNewPassword) {
+        ToastAndroid.show("Please fill in all fields", ToastAndroid.SHORT);
+        return;
+      }
+      if (newPassword !== confirmNewPassword) {
+        ToastAndroid.show("Passwords do not match", ToastAndroid.SHORT);
+        return;
+      }
 
-    setLoading(true);
-    // Simulate password change logic
-    setTimeout(() => {
-      setLoading(false);
-      ToastAndroid.show("Password changed successfully", ToastAndroid.SHORT);
-      navigation.replace("Dashboard");
-    }, 2000);
+      await changeDefaultPassword({
+        oldPassword,
+        newPassword,
+        confirmNewPassword,
+      }).unwrap();
+
+      ToastAndroid.show("Password successfully changed", ToastAndroid.SHORT);
+
+      setTimeout(() => {
+        //   Navigate home
+        navigation.replace("Login");
+      }, 200);
+    } catch (error) {
+      const errorMewssage = error?.data?.message;
+
+      console.error("Error changing default password", error);
+      ToastAndroid.show(
+        `${errorMewssage || "Error changing default password"}`,
+        ToastAndroid.SHORT
+      );
+    }
   };
 
   return (
@@ -57,26 +75,26 @@ const ChangeDefaultPasswordScreen = ({ navigation }) => {
             onChangeText={setOldPassword}
             value={oldPassword}
             placeholder="Enter old password"
-            secureTextEntry
+            type="password"
           />
           <Input
             label="New Password"
             onChangeText={setNewPassword}
             value={newPassword}
             placeholder="Enter new password"
-            secureTextEntry
+            type="password"
           />
           <Input
             label="Confirm New Password"
             onChangeText={setConfirmNewPassword}
             value={confirmNewPassword}
             placeholder="Confirm new password"
-            secureTextEntry
+            type="password"
           />
         </View>
 
-        <Button onPress={handleChangePassword} disabled={loading}>
-          {loading ? "Changing Password..." : "Change Password"}
+        <Button onPress={handleChangePassword} disabled={isLoading}>
+          {isLoading ? "Changing Password..." : "Change Password"}
         </Button>
       </ScrollView>
     </SafeAreaView>

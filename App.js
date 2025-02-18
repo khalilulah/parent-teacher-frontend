@@ -113,6 +113,7 @@ const App = () => {
   const [fontsLoaded, error] = useFonts(FONT_CONFIG);
 
   const isUserLoggedIn = useSelector((state) => !!state.auth?.user);
+  const userLoggedIn = useSelector((state) => state.auth?.user);
 
   useEffect(() => {
     const handleInitialization = async () => {
@@ -140,9 +141,7 @@ const App = () => {
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={isUserLoggedIn ? "MainApp" : "Login"}
-        >
+        <Stack.Navigator initialRouteName={isUserLoggedIn ? "Login" : "Login"}>
           {SCREEN_CONFIG.map(({ name, component, options }) => (
             <Stack.Screen
               key={name}
