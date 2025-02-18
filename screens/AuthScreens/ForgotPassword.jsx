@@ -31,7 +31,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
       setTimeout(() => {
         //   Navigate to the ResetPassword screen
-        navigation.navigate("ResetPassword");
+        navigation.navigate("ResetPassword", { email });
       }, 200);
     } catch (error) {
       console.error(error);

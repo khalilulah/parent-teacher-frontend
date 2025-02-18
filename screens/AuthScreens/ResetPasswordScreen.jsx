@@ -8,32 +8,49 @@ import {
   TopBarBackNavigation,
 } from "../../components";
 import { COLORS } from "../../constants/theme";
+import { useResetPasswordMutation } from "../../redux/actions/auth/authApi";
 
-const ResetPasswordScreen = ({ navigation }) => {
+const ResetPasswordScreen = ({ navigation, route }) => {
+  const { email } = route?.params;
+  console.log(email);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
-  const handleResetPassword = () => {
-    if (!newPassword || !confirmNewPassword || !otp) {
-      ToastAndroid.show("Please fill in all fields", ToastAndroid.SHORT);
-      return;
+  const handleResetPassword = async () => {
+    try {
+      if (!newPassword || !confirmNewPassword || !otp) {
+        ToastAndroid.show("Please fill in all fields", ToastAndroid.SHORT);
+        return;
+      }
+      if (newPassword !== confirmNewPassword) {
+        ToastAndroid.show("Passwords do not match", ToastAndroid.SHORT);
+        return;
+      }
+      console.log(email);
+      await resetPassword({
+        verificationCode: otp,
+        newPassword,
+        confirmNewPassword,
+        email,
+      }).unwrap();
+
+      ToastAndroid.show("Password reset successful", ToastAndroid.SHORT);
+
+      setTimeout(() => {
+        //   Navigate home
+        navigation.replace("Login");
+      }, 200);
+    } catch (error) {
+      const errorMewssage = error?.data?.message;
+
+      console.error("Error resetting password", error);
+      ToastAndroid.show(
+        `${errorMewssage || "Error resetting password"}`,
+        ToastAndroid.SHORT
+      );
     }
-    if (newPassword !== confirmNewPassword) {
-      ToastAndroid.show("Passwords do not match", ToastAndroid.SHORT);
-      return;
-    }
-
-    setLoading(true);
-    // Simulate password reset logic
-    setTimeout(() => {
-      setLoading(false);
-      ToastAndroid.show("Password reset successfully", ToastAndroid.SHORT);
-
-      //   Navigate to login screen
-      navigation.replace("Login");
-    }, 2000);
   };
 
   return (
@@ -76,8 +93,8 @@ const ResetPasswordScreen = ({ navigation }) => {
           />
         </View>
 
-        <Button onPress={handleResetPassword} disabled={loading}>
-          {loading ? "Resetting Password..." : "Reset Password"}
+        <Button onPress={handleResetPassword} disabled={isLoading}>
+          {isLoading ? "Resetting Password..." : "Reset Password"}
         </Button>
       </ScrollView>
     </SafeAreaView>

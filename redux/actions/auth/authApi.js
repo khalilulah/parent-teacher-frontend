@@ -47,6 +47,13 @@ export const authApi = createApi({
         body: credentials,
       }),
     }),
+    resetPassword: builder.mutation({
+      query: (credentials) => ({
+        url: "/auth/ResetPassword",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
     sendOtp: builder.mutation({
       query: (credentials) => ({
         url: "/auth/sendOtp",
@@ -107,4 +114,5 @@ export const {
   useAddExistingGuardianMutation,
   useFetchRequestsQuery,
   useChangeDefaultPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;
