@@ -6,12 +6,14 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as NavigationBar from "expo-navigation-bar";
 import { COLORS, FONTS } from "../../constants/theme";
@@ -121,7 +123,10 @@ const Chats = ({ navigation }) => {
         socket.emit("get_users", userId);
 
         if (!selectedFile && !broadcastMessage.trim()) {
-          return;
+          return ToastAndroid.show(
+            "Kindly attach a file of type a message!",
+            ToastAndroid.SHORT
+          );
         }
 
         let messageData = {
@@ -167,6 +172,11 @@ const Chats = ({ navigation }) => {
         setBroadcastMessage("");
         setBroadcastModalVisible(false);
         setSelectedUsers([]);
+      } else {
+        return ToastAndroid.show(
+          "Kindly select at least one user!",
+          ToastAndroid.SHORT
+        );
       }
     } catch (error) {
       console.error(error);
@@ -318,7 +328,11 @@ const Chats = ({ navigation }) => {
         )}
 
         {/* Broadcast Modal */}
-        <Modal visible={broadcastModalVisible} animationType="slide">
+        <Modal
+          visible={broadcastModalVisible}
+          animationType="slide"
+          transparent
+        >
           <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)" }}>
             <ScrollView contentContainerStyle={styles.modalContainer}>
               <View style={styles.modalContent}>
@@ -338,9 +352,18 @@ const Chats = ({ navigation }) => {
                   Attach File
                 </Button>
                 {selectedFile && (
-                  <Text style={styles.attachedFileText}>
-                    Attached: {selectedFile?.assets?.[0]?.name}
-                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text style={styles.attachedFileText}>
+                      Attached: {selectedFile?.assets?.[0]?.name}
+                    </Text>
+                    <TouchableOpacity onPress={() => setSelectedFile(null)}>
+                      <MaterialIcons
+                        name="delete"
+                        size={16}
+                        color={COLORS.error}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 )}
 
                 {/* Toggle User List */}
@@ -358,8 +381,8 @@ const Chats = ({ navigation }) => {
                   <View style={{ flex: 1, maxHeight: 200 }}>
                     <FlatList
                       data={users?.data}
+                      scrollEnabled={false}
                       keyExtractor={(item) => item._id}
-                      nestedScrollEnabled={true}
                       renderItem={({ item }) => (
                         <TouchableOpacity
                           onPress={() => toggleUserSelection(item._id)}
@@ -478,8 +501,9 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 500,
     marginBottom: 10,
+    fontFamily: "Suse-Bold",
   },
   messageInput: {
     borderWidth: 1,
@@ -487,11 +511,15 @@ const styles = StyleSheet.create({
     height: 120, // Fixed height
     textAlignVertical: "top", // Ensures text starts from the top
     marginBottom: 10,
+    borderRadius: 12,
+    fontFamily: "Suse-Regular",
+    borderColor: COLORS.lightGray,
   },
   attachedFileText: {
     fontSize: 14,
     fontFamily: "Suse-SemiBold",
     marginVertical: 5,
+    flex: 1,
   },
   userListToggle: {
     marginTop: 20,
@@ -502,7 +530,7 @@ const styles = StyleSheet.create({
   },
   userListToggleText: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Suse-Bold",
   },
   userList: {
     marginTop: 10,

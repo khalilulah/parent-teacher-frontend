@@ -141,7 +141,9 @@ const App = () => {
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={isUserLoggedIn ? "Login" : "Login"}>
+        <Stack.Navigator
+          initialRouteName={isUserLoggedIn ? "MainApp" : "Login"}
+        >
           {SCREEN_CONFIG.map(({ name, component, options }) => (
             <Stack.Screen
               key={name}
